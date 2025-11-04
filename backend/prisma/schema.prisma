@@ -1,0 +1,185 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mongodb"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id       String   @id @default(auto()) @map("_id") @db.ObjectId
+  email    String   @unique
+  password String
+  role     Role
+  name     String
+  phone    String?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  // Relations
+  students  Student[] @relation("ParentStudents")
+  classes   Class[]   @relation("TeacherClasses")
+  events    Event[]
+  assignments Assignment[]
+  notifications Notification[]
+  feedbacks Feedback[]
+}
+
+model Student {
+  id        String   @id @default(auto()) @map("_id") @db.ObjectId
+  name      String
+  rollNo    String   @unique
+  class     String
+  section   String
+  parentId  String   @db.ObjectId
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  // Relations
+  parent      User         @relation("ParentStudents", fields: [parentId], references: [id])
+  attendance  Attendance[]
+  marks       Mark[]
+  assignments Assignment[]
+  fees        Fee[]
+}
+
+model Class {
+  id        String   @id @default(auto()) @map("_id") @db.ObjectId
+  name      String
+  section   String
+  teacherId String   @db.ObjectId
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  // Relations
+  teacher User @relation("TeacherClasses", fields: [teacherId], references: [id])
+}
+
+model Attendance {
+  id        String   @id @default(auto()) @map("_id") @db.ObjectId
+  studentId String   @db.ObjectId
+  date      DateTime
+  status    AttendanceStatus
+  createdAt DateTime @default(now())
+
+  // Relations
+  student Student @relation(fields: [studentId], references: [id])
+
+  @@unique([studentId, date])
+}
+
+model Mark {
+  id        String   @id @default(auto()) @map("_id") @db.ObjectId
+  studentId String   @db.ObjectId
+  subject   String
+  examType  String
+  marks     Int
+  maxMarks  Int
+  date      DateTime
+  createdAt DateTime @default(now())
+
+  // Relations
+  student Student @relation(fields: [studentId], references: [id])
+}
+
+model Event {
+  id          String   @id @default(auto()) @map("_id") @db.ObjectId
+  title       String
+  description String
+  date        DateTime
+  createdBy   String   @db.ObjectId
+  createdAt   DateTime @default(now())
+
+  // Relations
+  creator User @relation(fields: [createdBy], references: [id])
+}
+
+model Assignment {
+  id          String   @id @default(auto()) @map("_id") @db.ObjectId
+  title       String
+  description String
+  dueDate     DateTime
+  subject     String
+  class       String
+  section     String
+  createdBy   String   @db.ObjectId
+  studentId   String?  @db.ObjectId
+  status      AssignmentStatus @default(PENDING)
+  createdAt   DateTime @default(now())
+
+  // Relations
+  teacher User     @relation(fields: [createdBy], references: [id])
+  student Student? @relation(fields: [studentId], references: [id])
+}
+
+model Fee {
+  id          String    @id @default(auto()) @map("_id") @db.ObjectId
+  studentId   String    @db.ObjectId
+  amount      Float
+  dueDate     DateTime
+  paidDate    DateTime?
+  status      FeeStatus @default(PENDING)
+  description String
+  createdAt   DateTime  @default(now())
+
+  // Relations
+  student Student @relation(fields: [studentId], references: [id])
+}
+
+model Notification {
+  id        String   @id @default(auto()) @map("_id") @db.ObjectId
+  userId    String   @db.ObjectId
+  title     String
+  message   String
+  type      NotificationType
+  read      Boolean  @default(false)
+  createdAt DateTime @default(now())
+
+  // Relations
+  user User @relation(fields: [userId], references: [id])
+}
+
+model Feedback {
+  id        String   @id @default(auto()) @map("_id") @db.ObjectId
+  parentId  String   @db.ObjectId
+  message   String
+  rating    Int?
+  createdAt DateTime @default(now())
+
+  // Relations
+  parent User @relation(fields: [parentId], references: [id])
+}
+
+enum Role {
+  PARENT
+  TEACHER
+  ADMIN
+}
+
+enum AttendanceStatus {
+  PRESENT
+  ABSENT
+  LATE
+}
+
+enum AssignmentStatus {
+  PENDING
+  SUBMITTED
+  REVIEWED
+}
+
+enum FeeStatus {
+  PENDING
+  PAID
+  OVERDUE
+}
+
+enum NotificationType {
+  ATTENDANCE
+  MARKS
+  EVENT
+  ASSIGNMENT
+  FEE
+  GENERAL
+}
