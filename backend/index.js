@@ -13,6 +13,7 @@ import assignmentRoutes from './routes/assignments.js';
 import feeRoutes from './routes/fees.js';
 import notificationRoutes from './routes/notifications.js';
 import feedbackRoutes from './routes/feedback.js';
+import adminRoutes from './routes/admin.js';
 
 dotenv.config();
 
@@ -34,6 +35,7 @@ app.use('/api/assignments', assignmentRoutes);
 app.use('/api/fee', feeRoutes);
 app.use('/api/notifications', notificationRoutes);
 app.use('/api/feedback', feedbackRoutes);
+app.use('/api/admin', adminRoutes);
 
 // Health check
 app.get('/', (req, res) => {
