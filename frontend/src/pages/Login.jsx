@@ -28,45 +28,62 @@ const Login = () => {
   };
 
   return (
-    <div>
-      <div>
+    <div className="min-h-screen bg-blue-50 flex items-center justify-center">
+      <div className="bg-white p-8 rounded-lg shadow-lg">
         <div>
-          <h2>EduMate</h2>
-          <p>Login Portal</p>
-        </div>
-        
-        <form onSubmit={handleSubmit}>
-          {error && (
-            <div>{error}</div>
-          )}
-          
           <div>
-            <input
-              type="email"
-              required
-              placeholder="Email address"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-            />
+            <h2 className="text-2xl font-bold text-gray-900">EduMate</h2>
+            <p className="text-blue-600 mt-2">Welcome back to your portal</p>
           </div>
           
-          <div>
-            <input
-              type="password"
-              required
-              placeholder="Password"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-            />
-          </div>
+          <form onSubmit={handleSubmit}>
+            {error && (
+              <div>
+                <p>{error}</p>
+              </div>
+            )}
+            
+            <div>
+              <div>
+                <input
+                  type="email"
+                  required
+                  placeholder="Email address"
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                />
+              </div>
+              
+              <div>
+                <input
+                  type="password"
+                  required
+                  placeholder="Password"
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
+                />
+              </div>
+            </div>
 
-          <button
-            type="submit"
-            disabled={loading}
-          >
-            {loading ? 'Signing in...' : 'Sign in'}
-          </button>
-        </form>
+            <button
+              type="submit"
+              disabled={loading}
+            >
+              {loading ? (
+                <div>
+                  <div></div>
+                  Signing in...
+                </div>
+              ) : (
+                'Sign in'
+              )}
+            </button>
+          </form>
+          
+          <div>
+            <p>Secure login powered by EduMate</p>
+          </div>
+        </div>
       </div>
     </div>
   );
