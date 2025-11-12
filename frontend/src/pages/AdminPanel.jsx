@@ -15,16 +15,19 @@ const AdminPanel = () => {
   };
 
   return (
-    <div>
-      <nav>
-        <div>
-          <div>
+    <div className="min-h-screen bg-gray-50">
+      <nav className="bg-white shadow-sm border-b">
+        <div className="max-w-7xl mx-auto px-4">
+          <div className="flex justify-between items-center h-16">
             <div>
-              <h1>EduMate - Admin</h1>
+              <h1 className="text-2xl font-bold text-red-600">EduMate - Admin</h1>
             </div>
-            <div>
-              <span>Welcome, {user?.name}</span>
-              <button onClick={logout}>
+            <div className="flex items-center space-x-4">
+              <span className="text-gray-700">Welcome, {user?.name}</span>
+              <button 
+                onClick={logout}
+                className="bg-red-600 text-white px-4 py-2 rounded-lg hover:bg-red-700 transition-colors"
+              >
                 Logout
               </button>
             </div>
@@ -32,64 +35,67 @@ const AdminPanel = () => {
         </div>
       </nav>
 
-      <main>
-        <div>
-          <h2>
+      <main className="max-w-7xl mx-auto px-4 py-8">
+        <div className="mb-8">
+          <h2 className="text-3xl font-bold text-gray-900 mb-2">
             Admin Dashboard
           </h2>
-          <p>Manage students, teachers, and school operations</p>
+          <p className="text-gray-600">Manage students, teachers, and school operations</p>
         </div>
         
         {message && (
-          <div>
-            {message}
+          <div className="bg-green-50 border-l-4 border-green-400 p-4 mb-6 rounded">
+            <p className="text-green-700">{message}</p>
           </div>
         )}
         
-        <div>
-          <div>
-            <h3>Add Student</h3>
-            <p>Add new student to database</p>
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          <div className="bg-white p-6 rounded-xl shadow-sm border hover:shadow-md transition-shadow">
+            <h3 className="text-xl font-semibold text-gray-900 mb-2">Add Student</h3>
+            <p className="text-gray-600 mb-4">Add new student to database</p>
             <button
               onClick={() => setActiveDialog('student')}
+              className="w-full bg-red-600 text-white py-2 px-4 rounded-lg hover:bg-red-700 transition-colors"
             >
               Add Student
             </button>
           </div>
           
-          <div>
-            <h3>Add Teacher</h3>
-            <p>Add new teacher to database</p>
+          <div className="bg-white p-6 rounded-xl shadow-sm border hover:shadow-md transition-shadow">
+            <h3 className="text-xl font-semibold text-gray-900 mb-2">Add Teacher</h3>
+            <p className="text-gray-600 mb-4">Add new teacher to database</p>
             <button
               onClick={() => setActiveDialog('teacher')}
+              className="w-full bg-red-600 text-white py-2 px-4 rounded-lg hover:bg-red-700 transition-colors"
             >
               Add Teacher
             </button>
           </div>
           
-          <div>
-            <h3>Assign Classes</h3>
-            <p>Assign teachers to classes</p>
+          <div className="bg-white p-6 rounded-xl shadow-sm border hover:shadow-md transition-shadow">
+            <h3 className="text-xl font-semibold text-gray-900 mb-2">Assign Classes</h3>
+            <p className="text-gray-600 mb-4">Assign teachers to classes</p>
             <button
               onClick={() => setActiveDialog('assign')}
+              className="w-full bg-red-600 text-white py-2 px-4 rounded-lg hover:bg-red-700 transition-colors"
             >
               Assign Class
             </button>
           </div>
           
-          <div>
-            <h3>School Settings</h3>
-            <p>Configure system settings</p>
+          <div className="bg-white p-6 rounded-xl shadow-sm border hover:shadow-md transition-shadow">
+            <h3 className="text-xl font-semibold text-gray-900 mb-2">School Settings</h3>
+            <p className="text-gray-600">Configure system settings</p>
           </div>
           
-          <div>
-            <h3>Fee Management</h3>
-            <p>Manage fee structure</p>
+          <div className="bg-white p-6 rounded-xl shadow-sm border hover:shadow-md transition-shadow">
+            <h3 className="text-xl font-semibold text-gray-900 mb-2">Fee Management</h3>
+            <p className="text-gray-600">Manage fee structure</p>
           </div>
           
-          <div>
-            <h3>Analytics</h3>
-            <p>School performance analytics</p>
+          <div className="bg-white p-6 rounded-xl shadow-sm border hover:shadow-md transition-shadow">
+            <h3 className="text-xl font-semibold text-gray-900 mb-2">Analytics</h3>
+            <p className="text-gray-600">School performance analytics</p>
           </div>
         </div>
       </main>
