@@ -3,7 +3,7 @@ import axios from 'axios';
 import AddTeacher from './AddTeacher';
 import EditTeacher from './EditTeacher';
 
-const SeeTeachers = ({ onClose, onSuccess }) => {
+const SeeTeachers = ({ onClose, onSuccess, inline = false }) => {
   const [teachers, setTeachers] = useState([]);
   const [loading, setLoading] = useState(true);
   const [showAddTeacher, setShowAddTeacher] = useState(false);
@@ -46,6 +46,102 @@ const SeeTeachers = ({ onClose, onSuccess }) => {
     setEditingTeacher(null);
     fetchTeachers();
   };
+
+  if (inline) {
+    return (
+      <div>
+        <div className="flex justify-between items-center mb-6">
+          <button
+            onClick={() => setShowAddTeacher(true)}
+            className="bg-green-600 text-white px-4 py-2 rounded-lg hover:bg-green-700 transition-colors"
+          >
+            Add Teacher
+          </button>
+        </div>
+
+        <div>
+          {loading ? (
+            <div className="text-center py-8">Loading...</div>
+          ) : teachers.length === 0 ? (
+            <div className="text-center py-8 text-gray-500">No teachers found</div>
+          ) : (
+            <div className="overflow-x-auto">
+              <table className="w-full border-collapse border border-gray-300">
+                <thead>
+                  <tr className="bg-gray-50">
+                    <th className="border border-gray-300 px-4 py-2 text-left">Name</th>
+                    <th className="border border-gray-300 px-4 py-2 text-left">Employee ID</th>
+                    <th className="border border-gray-300 px-4 py-2 text-left">Subject</th>
+                    <th className="border border-gray-300 px-4 py-2 text-left">Qualification</th>
+                    <th className="border border-gray-300 px-4 py-2 text-left">Experience</th>
+                    <th className="border border-gray-300 px-4 py-2 text-left">Email</th>
+                    <th className="border border-gray-300 px-4 py-2 text-left">Assigned Classes</th>
+                    <th className="border border-gray-300 px-4 py-2 text-center">Actions</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {teachers.map((teacher) => (
+                    <tr key={teacher.id} className="hover:bg-gray-50">
+                      <td className="border border-gray-300 px-4 py-2">{teacher.name}</td>
+                      <td className="border border-gray-300 px-4 py-2">{teacher.employeeId}</td>
+                      <td className="border border-gray-300 px-4 py-2">{teacher.subject}</td>
+                      <td className="border border-gray-300 px-4 py-2">{teacher.qualification}</td>
+                      <td className="border border-gray-300 px-4 py-2">{teacher.experience} years</td>
+                      <td className="border border-gray-300 px-4 py-2">{teacher.email}</td>
+                      <td className="border border-gray-300 px-4 py-2">
+                        {teacher.teacherClasses && teacher.teacherClasses.length > 0 ? (
+                          <div className="flex flex-wrap gap-1">
+                            {teacher.teacherClasses.map((tc, index) => (
+                              <span key={index} className="inline-block bg-blue-100 text-blue-800 text-xs px-2 py-1 rounded">
+                                {tc.className}-{tc.section}
+                              </span>
+                            ))}
+                          </div>
+                        ) : (
+                          <span className="text-gray-500 text-sm">No classes assigned</span>
+                        )}
+                      </td>
+                      <td className="border border-gray-300 px-4 py-2 text-center">
+                        <div className="flex justify-center space-x-2">
+                          <button
+                            onClick={() => setEditingTeacher(teacher)}
+                            className="bg-blue-600 text-white px-3 py-1 rounded text-sm hover:bg-blue-700 transition-colors"
+                          >
+                            Edit
+                          </button>
+                          <button
+                            onClick={() => handleDelete(teacher.id, teacher.name)}
+                            className="bg-red-600 text-white px-3 py-1 rounded text-sm hover:bg-red-700 transition-colors"
+                          >
+                            Delete
+                          </button>
+                        </div>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          )}
+        </div>
+
+        {showAddTeacher && (
+          <AddTeacher
+            onClose={() => setShowAddTeacher(false)}
+            onSuccess={handleAddSuccess}
+          />
+        )}
+
+        {editingTeacher && (
+          <EditTeacher
+            teacher={editingTeacher}
+            onClose={() => setEditingTeacher(null)}
+            onSuccess={handleEditSuccess}
+          />
+        )}
+      </div>
+    );
+  }
 
   return (
     <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50" onClick={onClose}>

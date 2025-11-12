@@ -138,4 +138,30 @@ router.get('/teacher-classes/:teacherId', authenticateToken, authorizeRole(['ADM
   }
 });
 
+// Delete Student
+router.delete('/students/:id', authenticateToken, authorizeRole(['ADMIN']), async (req, res) => {
+  try {
+    const { id } = req.params;
+    await prisma.student.delete({
+      where: { id: parseInt(id) }
+    });
+    res.json({ message: 'Student deleted successfully' });
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+});
+
+// Delete Teacher
+router.delete('/teachers/:id', authenticateToken, authorizeRole(['ADMIN']), async (req, res) => {
+  try {
+    const { id } = req.params;
+    await prisma.teacher.delete({
+      where: { id: parseInt(id) }
+    });
+    res.json({ message: 'Teacher deleted successfully' });
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+});
+
 export default router;
