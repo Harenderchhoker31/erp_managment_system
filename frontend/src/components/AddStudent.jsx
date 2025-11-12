@@ -12,7 +12,6 @@ const AddStudent = ({ onClose, onSuccess }) => {
     dateOfBirth: '',
     gender: '',
     address: '',
-    phone: '',
     parentName: '',
     parentPhone: '',
     parentEmail: '',
@@ -107,7 +106,7 @@ const AddStudent = ({ onClose, onSuccess }) => {
                 type="text"
                 placeholder="Class"
                 value={formData.class}
-                onChange={(e) => setFormData({...formData, class: e.target.value})}
+                onChange={(e) => setFormData({...formData, class: e.target.value.toUpperCase()})}
                 className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-transparent"
                 required
               />
@@ -118,7 +117,7 @@ const AddStudent = ({ onClose, onSuccess }) => {
                 type="text"
                 placeholder="Section"
                 value={formData.section}
-                onChange={(e) => setFormData({...formData, section: e.target.value})}
+                onChange={(e) => setFormData({...formData, section: e.target.value.toUpperCase()})}
                 className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-transparent"
                 required
               />
@@ -187,9 +186,11 @@ const AddStudent = ({ onClose, onSuccess }) => {
               <label className="block text-sm font-medium text-gray-700 mb-1">Parent Email</label>
               <input
                 type="email"
-                placeholder="Parent Email"
+                placeholder="parent@example.com"
                 value={formData.parentEmail}
                 onChange={(e) => setFormData({...formData, parentEmail: e.target.value})}
+                pattern=".*@.*"
+                title="Email must contain @ symbol"
                 className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-transparent"
                 required
               />

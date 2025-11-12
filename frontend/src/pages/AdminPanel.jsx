@@ -51,24 +51,24 @@ const AdminPanel = () => {
         
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           <div className="bg-white p-6 rounded-xl shadow-sm border hover:shadow-md transition-shadow">
-            <h3 className="text-xl font-semibold text-gray-900 mb-2">Add Student</h3>
-            <p className="text-gray-600 mb-4">Add new student to database</p>
+            <h3 className="text-xl font-semibold text-gray-900 mb-2">See Students</h3>
+            <p className="text-gray-600 mb-4">View and manage students</p>
             <button
-              onClick={() => setActiveDialog('student')}
+              onClick={() => setActiveDialog('students')}
               className="w-full bg-red-600 text-white py-2 px-4 rounded-lg hover:bg-red-700 transition-colors"
             >
-              Add Student
+              See Students
             </button>
           </div>
           
           <div className="bg-white p-6 rounded-xl shadow-sm border hover:shadow-md transition-shadow">
-            <h3 className="text-xl font-semibold text-gray-900 mb-2">Add Teacher</h3>
-            <p className="text-gray-600 mb-4">Add new teacher to database</p>
+            <h3 className="text-xl font-semibold text-gray-900 mb-2">See Teachers</h3>
+            <p className="text-gray-600 mb-4">View and manage teachers</p>
             <button
-              onClick={() => setActiveDialog('teacher')}
+              onClick={() => setActiveDialog('teachers')}
               className="w-full bg-red-600 text-white py-2 px-4 rounded-lg hover:bg-red-700 transition-colors"
             >
-              Add Teacher
+              See Teachers
             </button>
           </div>
           
