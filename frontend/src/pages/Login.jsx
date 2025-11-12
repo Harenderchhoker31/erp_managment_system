@@ -65,7 +65,7 @@ const Login = () => {
             <div className="space-y-4">
               <div className="relative">
                 <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                  <span className="text-purple-300 text-xl">📧</span>
+                  <span className="text-purple-300 text-lg font-bold">@</span>
                 </div>
                 <input
                   type="email"
@@ -78,7 +78,7 @@ const Login = () => {
               </div>
               <div className="relative">
                 <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                  <span className="text-purple-300 text-xl">🔒</span>
+                  <span className="text-purple-300 text-lg font-bold">*</span>
                 </div>
                 <input
                   type="password"
