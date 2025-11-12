@@ -1,22 +1,21 @@
 import { useState } from 'react';
 import axios from 'axios';
 
-const AddStudent = ({ onClose, onSuccess }) => {
+const EditStudent = ({ student, onClose, onSuccess }) => {
   const [formData, setFormData] = useState({
-    email: '',
-    password: '',
-    name: '',
-    rollNo: '',
-    class: '',
-    section: '',
-    dateOfBirth: '',
-    gender: '',
-    address: '',
-    fatherName: '',
-    motherName: '',
-    fatherPhone: '',
-    fatherEmail: '',
-    bloodGroup: ''
+    email: student.email || '',
+    name: student.name || '',
+    rollNo: student.rollNo || '',
+    class: student.class || '',
+    section: student.section || '',
+    dateOfBirth: student.dateOfBirth ? student.dateOfBirth.split('T')[0] : '',
+    gender: student.gender || '',
+    address: student.address || '',
+    fatherName: student.fatherName || '',
+    motherName: student.motherName || '',
+    fatherPhone: student.fatherPhone || '',
+    fatherEmail: student.fatherEmail || '',
+    bloodGroup: student.bloodGroup || ''
   });
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
@@ -27,11 +26,11 @@ const AddStudent = ({ onClose, onSuccess }) => {
     setError('');
 
     try {
-      await axios.post('/api/admin/students', formData);
-      onSuccess('Student added successfully');
+      await axios.put(`/api/admin/students/${student.id}`, formData);
+      onSuccess('Student updated successfully');
       onClose();
     } catch (error) {
-      setError(error.response?.data?.error || 'Failed to add student');
+      setError(error.response?.data?.error || 'Failed to update student');
     }
     setLoading(false);
   };
@@ -40,7 +39,7 @@ const AddStudent = ({ onClose, onSuccess }) => {
     <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50" onClick={onClose}>
       <div className="bg-white rounded-2xl shadow-2xl w-full max-w-2xl max-h-[90vh] overflow-y-auto" onClick={(e) => e.stopPropagation()}>
         <div className="flex justify-between items-center p-6 border-b">
-          <h2 className="text-2xl font-bold text-gray-900">Add New Student</h2>
+          <h2 className="text-2xl font-bold text-gray-900">Edit Student</h2>
           <button 
             onClick={onClose}
             className="text-gray-400 hover:text-gray-600 text-2xl font-bold"
@@ -61,20 +60,8 @@ const AddStudent = ({ onClose, onSuccess }) => {
               <label className="block text-sm font-medium text-gray-700 mb-1">Email</label>
               <input
                 type="email"
-                placeholder="student@student.in"
                 value={formData.email}
                 onChange={(e) => setFormData({...formData, email: e.target.value})}
-                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-transparent"
-                required
-              />
-            </div>
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Password</label>
-              <input
-                type="password"
-                placeholder="Password"
-                value={formData.password}
-                onChange={(e) => setFormData({...formData, password: e.target.value})}
                 className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-transparent"
                 required
               />
@@ -83,7 +70,6 @@ const AddStudent = ({ onClose, onSuccess }) => {
               <label className="block text-sm font-medium text-gray-700 mb-1">Full Name</label>
               <input
                 type="text"
-                placeholder="Full Name"
                 value={formData.name}
                 onChange={(e) => setFormData({...formData, name: e.target.value})}
                 className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-transparent"
@@ -94,7 +80,6 @@ const AddStudent = ({ onClose, onSuccess }) => {
               <label className="block text-sm font-medium text-gray-700 mb-1">Roll Number</label>
               <input
                 type="text"
-                placeholder="Roll Number"
                 value={formData.rollNo}
                 onChange={(e) => setFormData({...formData, rollNo: e.target.value})}
                 className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-transparent"
@@ -105,7 +90,6 @@ const AddStudent = ({ onClose, onSuccess }) => {
               <label className="block text-sm font-medium text-gray-700 mb-1">Class</label>
               <input
                 type="text"
-                placeholder="Class"
                 value={formData.class}
                 onChange={(e) => setFormData({...formData, class: e.target.value.toUpperCase()})}
                 className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-transparent"
@@ -116,7 +100,6 @@ const AddStudent = ({ onClose, onSuccess }) => {
               <label className="block text-sm font-medium text-gray-700 mb-1">Section</label>
               <input
                 type="text"
-                placeholder="Section"
                 value={formData.section}
                 onChange={(e) => setFormData({...formData, section: e.target.value.toUpperCase()})}
                 className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-transparent"
@@ -146,30 +129,11 @@ const AddStudent = ({ onClose, onSuccess }) => {
                 <option value="Female">Female</option>
               </select>
             </div>
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Blood Group</label>
-              <select
-                value={formData.bloodGroup}
-                onChange={(e) => setFormData({...formData, bloodGroup: e.target.value})}
-                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-transparent"
-              >
-                <option value="">Select Blood Group</option>
-                <option value="A+">A+</option>
-                <option value="A-">A-</option>
-                <option value="B+">B+</option>
-                <option value="B-">B-</option>
-                <option value="AB+">AB+</option>
-                <option value="AB-">AB-</option>
-                <option value="O+">O+</option>
-                <option value="O-">O-</option>
-              </select>
-            </div>
           </div>
           
           <div className="mb-6">
             <label className="block text-sm font-medium text-gray-700 mb-1">Address</label>
             <textarea
-              placeholder="Address"
               value={formData.address}
               onChange={(e) => setFormData({...formData, address: e.target.value})}
               className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-transparent"
@@ -185,7 +149,6 @@ const AddStudent = ({ onClose, onSuccess }) => {
                 <label className="block text-sm font-medium text-gray-700 mb-1">Father Name</label>
                 <input
                   type="text"
-                  placeholder="Father Name"
                   value={formData.fatherName}
                   onChange={(e) => setFormData({...formData, fatherName: e.target.value})}
                   className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-transparent"
@@ -196,7 +159,6 @@ const AddStudent = ({ onClose, onSuccess }) => {
                 <label className="block text-sm font-medium text-gray-700 mb-1">Mother Name</label>
                 <input
                   type="text"
-                  placeholder="Mother Name"
                   value={formData.motherName}
                   onChange={(e) => setFormData({...formData, motherName: e.target.value})}
                   className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-transparent"
@@ -207,7 +169,6 @@ const AddStudent = ({ onClose, onSuccess }) => {
                 <label className="block text-sm font-medium text-gray-700 mb-1">Father Phone</label>
                 <input
                   type="tel"
-                  placeholder="Father Phone"
                   value={formData.fatherPhone}
                   onChange={(e) => setFormData({...formData, fatherPhone: e.target.value})}
                   className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-transparent"
@@ -218,11 +179,9 @@ const AddStudent = ({ onClose, onSuccess }) => {
                 <label className="block text-sm font-medium text-gray-700 mb-1">Father Email</label>
                 <input
                   type="email"
-                  placeholder="father@example.com"
                   value={formData.fatherEmail}
                   onChange={(e) => setFormData({...formData, fatherEmail: e.target.value})}
                   pattern=".*@.*"
-                  title="Email must contain @ symbol"
                   className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-transparent"
                   required
                 />
@@ -243,7 +202,7 @@ const AddStudent = ({ onClose, onSuccess }) => {
               disabled={loading}
               className="px-6 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 disabled:opacity-50 transition-colors"
             >
-              {loading ? 'Adding...' : 'Add Student'}
+              {loading ? 'Updating...' : 'Update Student'}
             </button>
           </div>
         </form>
@@ -252,4 +211,4 @@ const AddStudent = ({ onClose, onSuccess }) => {
   );
 };
 
-export default AddStudent;
+export default EditStudent;

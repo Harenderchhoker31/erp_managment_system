@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { useAuth } from '../context/AuthContext';
-import AddStudent from '../components/AddStudent';
-import AddTeacher from '../components/AddTeacher';
+import SeeStudents from '../components/SeeStudents';
+import SeeTeachers from '../components/SeeTeachers';
 import AssignClass from '../components/AssignClass';
 
 const AdminPanel = () => {
@@ -100,15 +100,15 @@ const AdminPanel = () => {
         </div>
       </main>
       
-      {activeDialog === 'student' && (
-        <AddStudent
+      {activeDialog === 'students' && (
+        <SeeStudents
           onClose={() => setActiveDialog(null)}
           onSuccess={handleSuccess}
         />
       )}
       
-      {activeDialog === 'teacher' && (
-        <AddTeacher
+      {activeDialog === 'teachers' && (
+        <SeeTeachers
           onClose={() => setActiveDialog(null)}
           onSuccess={handleSuccess}
         />
