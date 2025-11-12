@@ -33,7 +33,7 @@ const Login = () => {
         <div>
           <div>
             <h2 className="text-2xl font-bold text-gray-900">EduMate</h2>
-            <p className="text-blue-600 mt-2">Welcome back to your portal</p>
+            <p className="text-red-600 mt-2">Welcome back to your portal</p>
           </div>
           
           <form onSubmit={handleSubmit}>
