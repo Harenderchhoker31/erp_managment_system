@@ -11,11 +11,11 @@ const Dashboard = () => {
     return <AdminPanel />;
   }
   
-  if (user?.email?.includes('@student.in')) {
+  if (user?.role === 'STUDENT' || user?.email?.includes('@student.in')) {
     return <StudentPanel />;
   }
   
-  if (user?.email?.includes('@teachers.in')) {
+  if (user?.role === 'TEACHER' || user?.email?.includes('@teachers.in')) {
     return <TeacherPanel />;
   }
 

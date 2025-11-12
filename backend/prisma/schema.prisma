@@ -72,6 +72,23 @@ model Teacher {
 
   // Relations
   classes     Class[]
+  teacherClasses TeacherClass[]
+}
+
+model TeacherClass {
+  id        String   @id @default(auto()) @map("_id") @db.ObjectId
+  teacherId String   @db.ObjectId
+  className String
+  section   String
+  subject   String
+  isClassTeacher Boolean @default(false)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  // Relations
+  teacher Teacher @relation(fields: [teacherId], references: [id])
+
+  @@unique([teacherId, className, section, subject])
 }
 
 model Class {

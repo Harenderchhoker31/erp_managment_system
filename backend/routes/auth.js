@@ -54,9 +54,37 @@ router.post('/login', async (req, res) => {
   try {
     const { email, password } = req.body;
 
-    const user = await prisma.user.findUnique({
+    // Check User table first
+    let user = await prisma.user.findUnique({
       where: { email }
     });
+
+    let userType = 'USER';
+    let userRole = user?.role;
+
+    // If not found in User table, check Student table
+    if (!user) {
+      const student = await prisma.student.findUnique({
+        where: { email }
+      });
+      if (student) {
+        user = student;
+        userType = 'STUDENT';
+        userRole = 'STUDENT';
+      }
+    }
+
+    // If not found in Student table, check Teacher table
+    if (!user) {
+      const teacher = await prisma.teacher.findUnique({
+        where: { email }
+      });
+      if (teacher) {
+        user = teacher;
+        userType = 'TEACHER';
+        userRole = 'TEACHER';
+      }
+    }
 
     if (!user) {
       return res.status(400).json({ error: 'Invalid credentials' });
@@ -69,7 +97,7 @@ router.post('/login', async (req, res) => {
     }
 
     const token = jwt.sign(
-      { userId: user.id, role: user.role },
+      { userId: user.id, role: userRole, userType },
       process.env.JWT_SECRET,
       { expiresIn: '24h' }
     );
@@ -77,9 +105,10 @@ router.post('/login', async (req, res) => {
     res.json({
       message: 'Login successful',
       token,
-      user: { id: user.id, email: user.email, name: user.name, role: user.role }
+      user: { id: user.id, email: user.email, name: user.name, role: userRole }
     });
   } catch (error) {
+    console.error('Login error:', error);
     res.status(500).json({ error: error.message });
   }
 });

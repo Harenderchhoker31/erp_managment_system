@@ -90,9 +90,49 @@ router.get('/students', authenticateToken, authorizeRole(['ADMIN']), async (req,
 router.get('/teachers', authenticateToken, authorizeRole(['ADMIN']), async (req, res) => {
   try {
     const teachers = await prisma.teacher.findMany({
+      include: {
+        teacherClasses: true
+      },
       orderBy: { createdAt: 'desc' }
     });
     res.json(teachers);
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+});
+
+// Assign teacher to class
+router.post('/assign-class', authenticateToken, authorizeRole(['ADMIN']), async (req, res) => {
+  try {
+    const { teacherId, className, section, subject, isClassTeacher } = req.body;
+
+    const assignment = await prisma.teacherClass.create({
+      data: {
+        teacherId,
+        className,
+        section,
+        subject,
+        isClassTeacher: isClassTeacher || false
+      }
+    });
+
+    res.status(201).json({ message: 'Teacher assigned to class successfully', assignment });
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+});
+
+// Get teacher class assignments
+router.get('/teacher-classes/:teacherId', authenticateToken, authorizeRole(['ADMIN']), async (req, res) => {
+  try {
+    const { teacherId } = req.params;
+    const assignments = await prisma.teacherClass.findMany({
+      where: { teacherId },
+      include: {
+        teacher: { select: { name: true, subject: true } }
+      }
+    });
+    res.json(assignments);
   } catch (error) {
     res.status(500).json({ error: error.message });
   }
