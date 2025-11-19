@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import axios from 'axios';
 
-const AssignClass = ({ onClose, onSuccess }) => {
+const AssignClass = ({ onClose, onSuccess, inline = false }) => {
   const [teachers, setTeachers] = useState([]);
   const [formData, setFormData] = useState({
     teacherId: '',
@@ -40,6 +40,86 @@ const AssignClass = ({ onClose, onSuccess }) => {
     }
     setLoading(false);
   };
+
+  if (inline) {
+    return (
+      <div>
+        {error && (
+          <div className="bg-red-50 border-l-4 border-red-400 p-4 mb-6 rounded">
+            <p className="text-red-700 text-sm">{error}</p>
+          </div>
+        )}
+
+        <form onSubmit={handleSubmit}>
+          <div className="space-y-4 mb-6">
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1">Select Teacher</label>
+              <select
+                value={formData.teacherId}
+                onChange={(e) => setFormData({...formData, teacherId: e.target.value})}
+                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-transparent"
+                required
+              >
+                <option value="">Select Teacher</option>
+                {teachers.map(teacher => (
+                  <option key={teacher.id} value={teacher.id}>
+                    {teacher.name} - {teacher.subject}
+                  </option>
+                ))}
+              </select>
+            </div>
+
+            <div className="grid grid-cols-2 gap-4">
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">Class</label>
+                <input
+                  type="text"
+                  placeholder="e.g., XII"
+                  value={formData.className}
+                  onChange={(e) => setFormData({...formData, className: e.target.value.toUpperCase()})}
+                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-transparent"
+                  required
+                />
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">Section</label>
+                <input
+                  type="text"
+                  placeholder="e.g., A"
+                  value={formData.section}
+                  onChange={(e) => setFormData({...formData, section: e.target.value.toUpperCase()})}
+                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-transparent"
+                  required
+                />
+              </div>
+            </div>
+
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1">Subject</label>
+              <input
+                type="text"
+                placeholder="Subject"
+                value={formData.subject}
+                onChange={(e) => setFormData({...formData, subject: e.target.value.charAt(0).toUpperCase() + e.target.value.slice(1)})}
+                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-transparent"
+                required
+              />
+            </div>
+          </div>
+
+          <div className="flex justify-end">
+            <button
+              type="submit"
+              disabled={loading}
+              className="px-6 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 disabled:opacity-50 transition-colors"
+            >
+              {loading ? 'Assigning...' : 'Assign Class'}
+            </button>
+          </div>
+        </form>
+      </div>
+    );
+  }
 
   return (
     <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50" onClick={onClose}>
@@ -84,9 +164,9 @@ const AssignClass = ({ onClose, onSuccess }) => {
                 <label className="block text-sm font-medium text-gray-700 mb-1">Class</label>
                 <input
                   type="text"
-                  placeholder="e.g., 10th"
+                  placeholder="e.g., 10TH"
                   value={formData.className}
-                  onChange={(e) => setFormData({...formData, className: e.target.value})}
+                  onChange={(e) => setFormData({...formData, className: e.target.value.toUpperCase()})}
                   className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-transparent"
                   required
                 />
@@ -97,7 +177,7 @@ const AssignClass = ({ onClose, onSuccess }) => {
                   type="text"
                   placeholder="e.g., A"
                   value={formData.section}
-                  onChange={(e) => setFormData({...formData, section: e.target.value})}
+                  onChange={(e) => setFormData({...formData, section: e.target.value.toUpperCase()})}
                   className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-transparent"
                   required
                 />
@@ -110,7 +190,7 @@ const AssignClass = ({ onClose, onSuccess }) => {
                 type="text"
                 placeholder="Subject"
                 value={formData.subject}
-                onChange={(e) => setFormData({...formData, subject: e.target.value})}
+                onChange={(e) => setFormData({...formData, subject: e.target.value.charAt(0).toUpperCase() + e.target.value.slice(1)})}
                 className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-transparent"
                 required
               />

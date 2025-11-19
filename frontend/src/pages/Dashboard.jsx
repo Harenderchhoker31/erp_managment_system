@@ -1,12 +1,12 @@
 import { useAuth } from '../context/AuthContext';
-import AdminPanel from './AdminPanel';
+import AdminPanel from './admin/AdminPanel';
 import StudentPanel from './StudentPanel';
 import TeacherPanel from './TeacherPanel';
 
 const Dashboard = () => {
   const { user } = useAuth();
 
-  // Check user role first, then email domain
+
   if (user?.role === 'ADMIN') {
     return <AdminPanel />;
   }
@@ -19,7 +19,6 @@ const Dashboard = () => {
     return <TeacherPanel />;
   }
 
-  // Default dashboard for other users
   return (
     <div className="min-h-screen bg-gray-50 flex items-center justify-center">
       <div className="text-center">
