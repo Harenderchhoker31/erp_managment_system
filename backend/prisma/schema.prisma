@@ -3,12 +3,12 @@ generator client {
 }
 
 datasource db {
-  provider = "mysql"
+  provider = "mongodb"
   url      = env("DATABASE_URL")
 }
 
 model User {
-  id       Int      @id @default(autoincrement())
+  id       String   @id @default(auto()) @map("_id") @db.ObjectId
   email    String   @unique
   password String
   role     Role
@@ -25,7 +25,7 @@ model User {
 }
 
 model Student {
-  id          Int      @id @default(autoincrement())
+  id          String   @id @default(auto()) @map("_id") @db.ObjectId
   email       String   @unique
   password    String
   name        String
@@ -52,7 +52,7 @@ model Student {
 }
 
 model Teacher {
-  id          Int      @id @default(autoincrement())
+  id          String   @id @default(auto()) @map("_id") @db.ObjectId
   email       String   @unique
   password    String
   name        String
@@ -75,8 +75,8 @@ model Teacher {
 }
 
 model TeacherClass {
-  id        Int      @id @default(autoincrement())
-  teacherId Int
+  id        String   @id @default(auto()) @map("_id") @db.ObjectId
+  teacherId String   @db.ObjectId
   className String
   section   String
   subject   String
@@ -91,10 +91,10 @@ model TeacherClass {
 }
 
 model Class {
-  id        Int      @id @default(autoincrement())
+  id        String   @id @default(auto()) @map("_id") @db.ObjectId
   name      String
   section   String
-  teacherId Int
+  teacherId String   @db.ObjectId
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
@@ -103,8 +103,8 @@ model Class {
 }
 
 model Attendance {
-  id        Int      @id @default(autoincrement())
-  studentId Int
+  id        String   @id @default(auto()) @map("_id") @db.ObjectId
+  studentId String   @db.ObjectId
   date      DateTime
   status    AttendanceStatus
   createdAt DateTime @default(now())
@@ -116,8 +116,8 @@ model Attendance {
 }
 
 model Mark {
-  id        Int      @id @default(autoincrement())
-  studentId Int
+  id        String   @id @default(auto()) @map("_id") @db.ObjectId
+  studentId String   @db.ObjectId
   subject   String
   examType  String
   marks     Int
@@ -130,11 +130,11 @@ model Mark {
 }
 
 model Event {
-  id          Int      @id @default(autoincrement())
+  id          String   @id @default(auto()) @map("_id") @db.ObjectId
   title       String
   description String
   date        DateTime
-  createdBy   Int
+  createdBy   String   @db.ObjectId
   createdAt   DateTime @default(now())
 
   // Relations
@@ -142,15 +142,15 @@ model Event {
 }
 
 model Assignment {
-  id          Int      @id @default(autoincrement())
+  id          String   @id @default(auto()) @map("_id") @db.ObjectId
   title       String
   description String
   dueDate     DateTime
   subject     String
   class       String
   section     String
-  createdBy   Int
-  studentId   Int?
+  createdBy   String   @db.ObjectId
+  studentId   String?  @db.ObjectId
   status      AssignmentStatus @default(PENDING)
   createdAt   DateTime @default(now())
 
@@ -160,8 +160,8 @@ model Assignment {
 }
 
 model Fee {
-  id          Int       @id @default(autoincrement())
-  studentId   Int
+  id          String    @id @default(auto()) @map("_id") @db.ObjectId
+  studentId   String    @db.ObjectId
   amount      Float
   dueDate     DateTime
   paidDate    DateTime?
@@ -174,8 +174,8 @@ model Fee {
 }
 
 model Notification {
-  id        Int      @id @default(autoincrement())
-  userId    Int
+  id        String   @id @default(auto()) @map("_id") @db.ObjectId
+  userId    String   @db.ObjectId
   title     String
   message   String
   type      NotificationType
@@ -187,8 +187,8 @@ model Notification {
 }
 
 model Feedback {
-  id        Int      @id @default(autoincrement())
-  parentId  Int
+  id        String   @id @default(auto()) @map("_id") @db.ObjectId
+  parentId  String   @db.ObjectId
   message   String
   rating    Int?
   createdAt DateTime @default(now())

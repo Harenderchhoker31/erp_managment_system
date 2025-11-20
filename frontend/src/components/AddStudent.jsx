@@ -16,7 +16,8 @@ const AddStudent = ({ onClose, onSuccess }) => {
     motherName: '',
     fatherPhone: '',
     fatherEmail: '',
-    bloodGroup: ''
+    bloodGroup: '',
+    admissionDate: ''
   });
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
@@ -27,7 +28,15 @@ const AddStudent = ({ onClose, onSuccess }) => {
     setError('');
 
     try {
-      await axios.post('/api/admin/students', formData);
+      const studentData = {
+        ...formData,
+        parentName: `${formData.fatherName} / ${formData.motherName}`,
+        parentPhone: formData.fatherPhone,
+        parentEmail: formData.fatherEmail,
+        phone: formData.fatherPhone,
+        admissionDate: formData.admissionDate
+      };
+      await axios.post('/api/admin/students', studentData);
       onSuccess('Student added successfully');
       onClose();
     } catch (error) {
@@ -163,6 +172,16 @@ const AddStudent = ({ onClose, onSuccess }) => {
                 <option value="O+">O+</option>
                 <option value="O-">O-</option>
               </select>
+            </div>
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1">Admission Date</label>
+              <input
+                type="date"
+                value={formData.admissionDate}
+                onChange={(e) => setFormData({...formData, admissionDate: e.target.value})}
+                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-transparent"
+                required
+              />
             </div>
           </div>
           

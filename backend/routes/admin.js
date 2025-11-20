@@ -46,7 +46,7 @@ router.post('/teachers', authenticateToken, authorizeRole(['ADMIN']), async (req
   try {
     const {
       email, password, name, employeeId, subject, qualification, experience,
-      dateOfBirth, gender, address, phone, salary
+      dateOfBirth, gender, address, phone, salary, joiningDate
     } = req.body;
 
     const hashedPassword = await bcrypt.hash(password, 10);
@@ -64,7 +64,8 @@ router.post('/teachers', authenticateToken, authorizeRole(['ADMIN']), async (req
         gender,
         address,
         phone,
-        salary: salary ? parseFloat(salary) : null
+        salary: salary ? parseFloat(salary) : null,
+        joiningDate: joiningDate ? new Date(joiningDate) : new Date()
       }
     });
 
@@ -143,7 +144,7 @@ router.delete('/students/:id', authenticateToken, authorizeRole(['ADMIN']), asyn
   try {
     const { id } = req.params;
     await prisma.student.delete({
-      where: { id: parseInt(id) }
+      where: { id }
     });
     res.json({ message: 'Student deleted successfully' });
   } catch (error) {
@@ -156,7 +157,7 @@ router.delete('/teachers/:id', authenticateToken, authorizeRole(['ADMIN']), asyn
   try {
     const { id } = req.params;
     await prisma.teacher.delete({
-      where: { id: parseInt(id) }
+      where: { id }
     });
     res.json({ message: 'Teacher deleted successfully' });
   } catch (error) {

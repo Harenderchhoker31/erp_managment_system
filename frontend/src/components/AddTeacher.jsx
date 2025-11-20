@@ -14,7 +14,8 @@ const AddTeacher = ({ onClose, onSuccess }) => {
     gender: '',
     address: '',
     phone: '',
-    salary: ''
+    salary: '',
+    joiningDate: ''
   });
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
@@ -174,6 +175,16 @@ const AddTeacher = ({ onClose, onSuccess }) => {
                 value={formData.salary}
                 onChange={(e) => setFormData({...formData, salary: e.target.value})}
                 className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-transparent"
+              />
+            </div>
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1">Joining Date</label>
+              <input
+                type="date"
+                value={formData.joiningDate}
+                onChange={(e) => setFormData({...formData, joiningDate: e.target.value})}
+                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-transparent"
+                required
               />
             </div>
           </div>
