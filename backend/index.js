@@ -6,6 +6,8 @@ import { PrismaClient } from '@prisma/client';
 // Import routes
 import authRoutes from './routes/auth.js';
 import adminRoutes from './routes/admin.js';
+import studentRoutes from './routes/student.js';
+import teacherRoutes from './routes/teacher.js';
 
 dotenv.config();
 
@@ -20,6 +22,9 @@ app.use(express.json());
 // Routes
 app.use('/api/auth', authRoutes);
 app.use('/api/admin', adminRoutes);
+app.use('/api/student', studentRoutes);
+app.use('/api/teacher', teacherRoutes);
+
 
 // Health check
 app.get('/', (req, res) => {
