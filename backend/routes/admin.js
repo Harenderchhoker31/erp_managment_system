@@ -287,4 +287,62 @@ router.get('/classes', authenticateToken, authorizeRole(['ADMIN']), async (req, 
   }
 });
 
+// Get all master classes (seeded classes) with student counts
+router.get('/all-classes', authenticateToken, authorizeRole(['ADMIN']), async (req, res) => {
+  try {
+    // Fetch all classes
+    const classes = await prisma.class.findMany({
+      orderBy: [
+        { name: 'asc' },
+        { section: 'asc' }
+      ]
+    });
+
+    // Fetch all students to calculate counts
+    // Note: In a larger system, this should be an aggregation query
+    const students = await prisma.student.findMany({
+      select: {
+        class: true,
+        section: true
+      }
+    });
+
+    // Calculate counts
+    const studentCounts = students.reduce((acc, student) => {
+      const key = `${student.class}-${student.section}`;
+      acc[key] = (acc[key] || 0) + 1;
+      return acc;
+    }, {});
+
+    // Add count to each class object
+    const classesWithCounts = classes.map(cls => ({
+      ...cls,
+      studentCount: studentCounts[`${cls.name}-${cls.section}`] || 0
+    }));
+
+    res.json(classesWithCounts);
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+});
+
+// Get students by class and section
+router.get('/students/class/:className/:section', authenticateToken, authorizeRole(['ADMIN']), async (req, res) => {
+  try {
+    const { className, section } = req.params;
+    const students = await prisma.student.findMany({
+      where: {
+        class: className,
+        section: section
+      },
+      orderBy: {
+        name: 'asc'
+      }
+    });
+    res.json(students);
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+});
+
 export default router;

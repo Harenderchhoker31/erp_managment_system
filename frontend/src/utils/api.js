@@ -37,6 +37,8 @@ export const adminAPI = {
   assignClass: (assignmentData) => api.post('/api/admin/assign-class', assignmentData),
   getTeacherClasses: (teacherId) => api.get(`/api/admin/teacher-classes/${teacherId}`),
   getClasses: () => api.get('/api/admin/classes'),
+  getAllClasses: () => api.get('/api/admin/all-classes'),
+  getStudentsByClass: (className, section) => api.get(`/api/admin/students/class/${encodeURIComponent(className)}/${encodeURIComponent(section)}`),
   getStats: () => api.get('/api/admin/stats'),
 };
 

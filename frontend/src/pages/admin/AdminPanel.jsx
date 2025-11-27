@@ -4,6 +4,7 @@ import Dashboard from './components/Dashboard';
 import ManageStudents from './components/ManageStudents';
 import ManageTeachers from './components/ManageTeachers';
 import ManageClasses from './components/ManageClasses';
+import ViewClasses from './components/ViewClasses';
 
 const AdminPanel = () => {
   const [activeDialog, setActiveDialog] = useState('dashboard');
@@ -22,6 +23,8 @@ const AdminPanel = () => {
         return <ManageStudents onSuccess={handleSuccess} />;
       case 'teachers':
         return <ManageTeachers onSuccess={handleSuccess} />;
+      case 'view-classes':
+        return <ViewClasses />;
       case 'assign':
         return <ManageClasses onSuccess={handleSuccess} />;
       default:
@@ -39,14 +42,14 @@ const AdminPanel = () => {
           <h2 className="text-2xl font-bold text-gray-900">Admin Dashboard</h2>
           <p className="text-gray-600 mt-1">Manage students, teachers, and school operations</p>
         </header>
-        
+
         <main className="p-6 h-full">
           {message && (
             <div className="bg-green-50 border-l-4 border-green-400 p-4 mb-6 rounded">
               <p className="text-green-700">{message}</p>
             </div>
           )}
-          
+
           {renderContent()}
         </main>
       </div>

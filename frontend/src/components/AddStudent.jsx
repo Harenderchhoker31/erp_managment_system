@@ -1,5 +1,5 @@
-import { useState } from 'react';
-import api from '../utils/api';
+import { useState, useEffect } from 'react';
+import api, { adminAPI } from '../utils/api';
 
 const AddStudent = ({ onClose, onSuccess }) => {
   const [formData, setFormData] = useState({
@@ -21,6 +21,33 @@ const AddStudent = ({ onClose, onSuccess }) => {
   });
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
+  const [classes, setClasses] = useState([]);
+  const [availableSections, setAvailableSections] = useState([]);
+
+  useEffect(() => {
+    fetchClasses();
+  }, []);
+
+  const fetchClasses = async () => {
+    try {
+      const response = await adminAPI.getAllClasses();
+      setClasses(response.data);
+    } catch (err) {
+      console.error('Failed to fetch classes', err);
+    }
+  };
+
+  const handleClassChange = (e) => {
+    const selectedClass = e.target.value;
+    setFormData({ ...formData, class: selectedClass, section: '' });
+
+    // Filter sections for the selected class
+    const sections = classes
+      .filter(c => c.name === selectedClass)
+      .map(c => c.section)
+      .sort();
+    setAvailableSections(sections);
+  };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -44,6 +71,9 @@ const AddStudent = ({ onClose, onSuccess }) => {
     }
     setLoading(false);
   };
+
+  // Get unique class names
+  const uniqueClassNames = [...new Set(classes.map(c => c.name))];
 
   return (
     <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50" onClick={onClose}>
@@ -112,25 +142,32 @@ const AddStudent = ({ onClose, onSuccess }) => {
             </div>
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-1">Class</label>
-              <input
-                type="text"
-                placeholder="Class"
+              <select
                 value={formData.class}
-                onChange={(e) => setFormData({ ...formData, class: e.target.value.toUpperCase() })}
+                onChange={handleClassChange}
                 className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-transparent"
                 required
-              />
+              >
+                <option value="">Select Class</option>
+                {uniqueClassNames.map(name => (
+                  <option key={name} value={name}>{name}</option>
+                ))}
+              </select>
             </div>
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-1">Section</label>
-              <input
-                type="text"
-                placeholder="Section"
+              <select
                 value={formData.section}
-                onChange={(e) => setFormData({ ...formData, section: e.target.value.toUpperCase() })}
+                onChange={(e) => setFormData({ ...formData, section: e.target.value })}
                 className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-transparent"
                 required
-              />
+                disabled={!formData.class}
+              >
+                <option value="">Select Section</option>
+                {availableSections.map(section => (
+                  <option key={section} value={section}>{section}</option>
+                ))}
+              </select>
             </div>
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-1">Date of Birth</label>

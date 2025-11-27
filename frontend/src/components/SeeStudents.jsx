@@ -48,68 +48,103 @@ const SeeStudents = ({ onClose, onSuccess, inline = false }) => {
   };
 
   if (inline) {
+    const [searchTerm, setSearchTerm] = useState('');
+    const [classFilter, setClassFilter] = useState('');
+
+    const filteredStudents = students.filter(student => {
+      const matchesSearch = student.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        student.rollNo.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        student.email.toLowerCase().includes(searchTerm.toLowerCase());
+      const matchesClass = !classFilter || student.class === classFilter;
+      return matchesSearch && matchesClass;
+    });
+
+    const uniqueClasses = [...new Set(students.map(s => s.class))].sort();
+
     return (
-      <div>
-        <div className="flex justify-between items-center mb-6">
+      <div className="space-y-4">
+        {/* Header */}
+        <div className="flex justify-between items-center p-4 bg-white border border-gray-300 rounded">
+          <div>
+            <h3 className="text-xl font-bold text-gray-900">Student Management</h3>
+            <p className="text-gray-600 text-sm">Total: {students.length} students</p>
+          </div>
           <button
             onClick={() => setShowAddStudent(true)}
-            className="bg-green-600 text-white px-4 py-2 rounded-lg hover:bg-green-700 transition-colors"
+            className="px-4 py-2 bg-green-600 text-white rounded hover:bg-green-700 transition-colors font-medium"
           >
-            Add Student
+            + Add Student
           </button>
         </div>
 
-        <div>
+        {/* Search and Filter */}
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+          <input
+            type="text"
+            placeholder="Search by name, roll number, or email..."
+            value={searchTerm}
+            onChange={(e) => setSearchTerm(e.target.value)}
+            className="px-4 py-2 border border-gray-300 rounded focus:outline-none focus:border-blue-500"
+          />
+          <select
+            value={classFilter}
+            onChange={(e) => setClassFilter(e.target.value)}
+            className="px-4 py-2 border border-gray-300 rounded focus:outline-none focus:border-blue-500"
+          >
+            <option value="">All Classes</option>
+            {uniqueClasses.map(cls => (
+              <option key={cls} value={cls}>Class {cls}</option>
+            ))}
+          </select>
+        </div>
+
+        {/* Students Table */}
+        <div className="bg-white border border-gray-300 rounded overflow-hidden">
           {loading ? (
-            <div className="text-center py-8">Loading...</div>
-          ) : students.length === 0 ? (
+            <div className="text-center py-8">Loading students...</div>
+          ) : filteredStudents.length === 0 ? (
             <div className="text-center py-8 text-gray-500">No students found</div>
           ) : (
             <div className="overflow-x-auto">
-              <table className="w-full border-collapse border border-gray-300">
+              <table className="w-full border-collapse">
                 <thead>
-                  <tr className="bg-gray-50">
-                    <th className="border border-gray-300 px-2 py-2 text-left text-xs">Name</th>
-                    <th className="border border-gray-300 px-2 py-2 text-left text-xs">Roll No</th>
-                    <th className="border border-gray-300 px-2 py-2 text-left text-xs">Class</th>
-                    <th className="border border-gray-300 px-2 py-2 text-left text-xs">Email</th>
-                    <th className="border border-gray-300 px-2 py-2 text-left text-xs">DOB</th>
-                    <th className="border border-gray-300 px-2 py-2 text-left text-xs">Gender</th>
-                    <th className="border border-gray-300 px-2 py-2 text-left text-xs">Address</th>
-                    <th className="border border-gray-300 px-2 py-2 text-left text-xs">Blood Group</th>
-                    <th className="border border-gray-300 px-2 py-2 text-left text-xs">Parent Name</th>
-                    <th className="border border-gray-300 px-2 py-2 text-left text-xs">Parent Phone</th>
-                    <th className="border border-gray-300 px-2 py-2 text-left text-xs">Parent Email</th>
-                    <th className="border border-gray-300 px-2 py-2 text-left text-xs">Admission Date</th>
-                    <th className="border border-gray-300 px-2 py-2 text-center text-xs">Actions</th>
+                  <tr className="bg-red-600 text-white">
+                    <th className="border border-gray-300 px-4 py-3 text-left text-sm font-semibold">Name</th>
+                    <th className="border border-gray-300 px-4 py-3 text-left text-sm font-semibold">Roll No</th>
+                    <th className="border border-gray-300 px-4 py-3 text-left text-sm font-semibold">Class</th>
+                    <th className="border border-gray-300 px-4 py-3 text-left text-sm font-semibold">Email</th>
+                    <th className="border border-gray-300 px-4 py-3 text-left text-sm font-semibold">DOB</th>
+                    <th className="border border-gray-300 px-4 py-3 text-left text-sm font-semibold">Gender</th>
+                    <th className="border border-gray-300 px-4 py-3 text-left text-sm font-semibold">Blood</th>
+                    <th className="border border-gray-300 px-4 py-3 text-left text-sm font-semibold">Parent</th>
+                    <th className="border border-gray-300 px-4 py-3 text-center text-sm font-semibold">Actions</th>
                   </tr>
                 </thead>
                 <tbody>
-                  {students.map((student) => (
+                  {filteredStudents.map((student) => (
                     <tr key={student.id} className="hover:bg-gray-50">
-                      <td className="border border-gray-300 px-2 py-2 text-sm">{student.name}</td>
-                      <td className="border border-gray-300 px-2 py-2 text-sm">{student.rollNo}</td>
-                      <td className="border border-gray-300 px-2 py-2 text-sm">{student.class}-{student.section}</td>
-                      <td className="border border-gray-300 px-2 py-2 text-sm">{student.email}</td>
-                      <td className="border border-gray-300 px-2 py-2 text-sm">{new Date(student.dateOfBirth).toLocaleDateString()}</td>
-                      <td className="border border-gray-300 px-2 py-2 text-sm">{student.gender}</td>
-                      <td className="border border-gray-300 px-2 py-2 text-sm max-w-32 truncate" title={student.address}>{student.address}</td>
-                      <td className="border border-gray-300 px-2 py-2 text-sm">{student.bloodGroup || 'N/A'}</td>
-                      <td className="border border-gray-300 px-2 py-2 text-sm">{student.parentName}</td>
-                      <td className="border border-gray-300 px-2 py-2 text-sm">{student.parentPhone}</td>
-                      <td className="border border-gray-300 px-2 py-2 text-sm">{student.parentEmail}</td>
-                      <td className="border border-gray-300 px-2 py-2 text-sm">{new Date(student.admissionDate).toLocaleDateString()}</td>
-                      <td className="border border-gray-300 px-2 py-2 text-center">
-                        <div className="flex justify-center space-x-1">
+                      <td className="border border-gray-300 px-4 py-3 text-sm">{student.name}</td>
+                      <td className="border border-gray-300 px-4 py-3 text-sm font-medium">{student.rollNo}</td>
+                      <td className="border border-gray-300 px-4 py-3 text-sm">{student.class}-{student.section}</td>
+                      <td className="border border-gray-300 px-4 py-3 text-sm">{student.email}</td>
+                      <td className="border border-gray-300 px-4 py-3 text-sm">{new Date(student.dateOfBirth).toLocaleDateString()}</td>
+                      <td className="border border-gray-300 px-4 py-3 text-sm">{student.gender}</td>
+                      <td className="border border-gray-300 px-4 py-3 text-sm">{student.bloodGroup || 'N/A'}</td>
+                      <td className="border border-gray-300 px-4 py-3 text-sm">
+                        <div>{student.parentName}</div>
+                        <div className="text-xs text-gray-500">{student.parentPhone}</div>
+                      </td>
+                      <td className="border border-gray-300 px-4 py-3 text-center">
+                        <div className="flex justify-center gap-2">
                           <button
                             onClick={() => setEditingStudent(student)}
-                            className="bg-blue-600 text-white px-2 py-1 rounded text-xs hover:bg-blue-700 transition-colors"
+                            className="px-3 py-1 bg-blue-600 text-white rounded hover:bg-blue-700 transition-colors text-sm"
                           >
                             Edit
                           </button>
                           <button
                             onClick={() => handleDelete(student.id, student.name)}
-                            className="bg-red-600 text-white px-2 py-1 rounded text-xs hover:bg-red-700 transition-colors"
+                            className="px-3 py-1 bg-red-600 text-white rounded hover:bg-red-700 transition-colors text-sm"
                           >
                             Delete
                           </button>
@@ -153,7 +188,7 @@ const SeeStudents = ({ onClose, onSuccess, inline = false }) => {
             >
               Add Student
             </button>
-            <button 
+            <button
               onClick={onClose}
               className="text-gray-400 hover:text-gray-600 text-2xl font-bold"
             >

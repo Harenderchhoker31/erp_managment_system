@@ -94,12 +94,12 @@ model Class {
   id        String   @id @default(auto()) @map("_id") @db.ObjectId
   name      String
   section   String
-  teacherId String   @db.ObjectId
+  teacherId String?  @db.ObjectId
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
   // Relations
-  teacher Teacher @relation(fields: [teacherId], references: [id])
+  teacher Teacher? @relation(fields: [teacherId], references: [id])
 }
 
 model Attendance {
