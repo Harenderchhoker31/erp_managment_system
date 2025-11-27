@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react';
 import axios from 'axios';
 
 const Dashboard = () => {
-  const [stats, setStats] = useState({ students: 0, teachers: 0 });
+  const [stats, setStats] = useState({ students: 0, teachers: 0, classes: 0, attendance: {} });
   const [thoughtOfDay, setThoughtOfDay] = useState('Education is the most powerful weapon which you can use to change the world.');
   const [isEditingThought, setIsEditingThought] = useState(false);
   const [tempThought, setTempThought] = useState('');
@@ -13,16 +13,19 @@ const Dashboard = () => {
 
   const fetchStats = async () => {
     try {
-      const [studentsRes, teachersRes] = await Promise.all([
-        axios.get('/api/admin/students'),
-        axios.get('/api/admin/teachers')
-      ]);
+      const token = localStorage.getItem('token');
+      const response = await axios.get('http://localhost:3001/api/admin/stats', {
+        headers: { Authorization: `Bearer ${token}` }
+      });
+
       setStats({
-        students: studentsRes.data.length,
-        teachers: teachersRes.data.length
+        students: response.data.totalStudents,
+        teachers: response.data.totalTeachers,
+        classes: response.data.totalClasses,
+        attendance: response.data.attendance
       });
     } catch (error) {
-      console.error('Failed to fetch stats');
+      console.error('Failed to fetch stats:', error);
     }
   };
 
@@ -48,7 +51,7 @@ const Dashboard = () => {
   return (
     <div className="space-y-6">
       {/* Stats Cards */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
         <div className="bg-white p-6 rounded-lg shadow-sm border">
           <div className="flex items-center">
             <div className="p-3 bg-blue-100 rounded-full">
@@ -60,7 +63,7 @@ const Dashboard = () => {
             </div>
           </div>
         </div>
-        
+
         <div className="bg-white p-6 rounded-lg shadow-sm border">
           <div className="flex items-center">
             <div className="p-3 bg-green-100 rounded-full">
@@ -72,7 +75,7 @@ const Dashboard = () => {
             </div>
           </div>
         </div>
-        
+
         <div className="bg-white p-6 rounded-lg shadow-sm border">
           <div className="flex items-center">
             <div className="p-3 bg-yellow-100 rounded-full">
@@ -80,12 +83,24 @@ const Dashboard = () => {
             </div>
             <div className="ml-4">
               <p className="text-sm font-medium text-gray-600">Active Classes</p>
-              <p className="text-2xl font-bold text-gray-900">12</p>
+              <p className="text-2xl font-bold text-gray-900">{stats.classes || 0}</p>
+            </div>
+          </div>
+        </div>
+
+        <div className="bg-white p-6 rounded-lg shadow-sm border">
+          <div className="flex items-center">
+            <div className="p-3 bg-green-100 rounded-full">
+              <span className="text-2xl">✅</span>
+            </div>
+            <div className="ml-4">
+              <p className="text-sm font-medium text-gray-600">Today's Attendance</p>
+              <p className="text-2xl font-bold text-gray-900">{stats.attendance?.present || 0}/{stats.attendance?.total || 0}</p>
             </div>
           </div>
         </div>
       </div>
-      
+
       {/* Thought of the Day */}
       <div className="bg-white rounded-lg shadow-sm border p-6">
         <div className="flex justify-between items-center mb-4">
@@ -109,7 +124,7 @@ const Dashboard = () => {
             )}
           </div>
         </div>
-        
+
         {isEditingThought ? (
           <div className="space-y-3">
             <textarea

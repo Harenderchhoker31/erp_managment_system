@@ -1,66 +1,52 @@
+import { useState } from 'react';
 import { useAuth } from '../context/AuthContext';
+import TeacherSidebar from './teacher/components/TeacherSidebar';
+import TeacherDashboard from './teacher/components/TeacherDashboard';
+import MarkAttendance from './teacher/components/MarkAttendance';
+import UploadMarks from './teacher/components/UploadMarks';
+import CreateAssignment from './teacher/components/CreateAssignment';
+import ViewClasses from './teacher/components/ViewClasses';
+import CreateEvent from './teacher/components/CreateEvent';
 
 const TeacherPanel = () => {
-  const { user, logout } = useAuth();
+  const { user } = useAuth();
+  const [activeSection, setActiveSection] = useState('dashboard');
+
+  const renderContent = () => {
+    switch (activeSection) {
+      case 'dashboard':
+        return <TeacherDashboard />;
+      case 'attendance':
+        return <MarkAttendance />;
+      case 'marks':
+        return <UploadMarks />;
+      case 'assignments':
+        return <CreateAssignment />;
+      case 'classes':
+        return <ViewClasses />;
+      case 'events':
+        return <CreateEvent />;
+      default:
+        return <TeacherDashboard />;
+    }
+  };
 
   return (
-    <div>
-      <nav>
-        <div>
-          <div>
-            <div>
-              <h1>EduMate - Teacher</h1>
-            </div>
-            <div>
-              <span>Welcome, {user?.name}</span>
-              <button onClick={logout}>
-                Logout
-              </button>
-            </div>
-          </div>
-        </div>
-      </nav>
+    <div className="min-h-screen bg-gray-50 flex">
+      <TeacherSidebar activeSection={activeSection} setActiveSection={setActiveSection} />
 
-      <main>
-        <div>
-          <h2>
-            Teacher Dashboard
+      <div className="flex-1 flex flex-col">
+        <header className="bg-white shadow-sm border-b p-6">
+          <h2 className="text-2xl font-bold text-gray-900">
+            {activeSection.charAt(0).toUpperCase() + activeSection.slice(1).replace(/([A-Z])/g, ' $1')}
           </h2>
-          <p>Manage your classes and students</p>
-        </div>
-        
-        <div>
-          <div>
-            <h3>Mark Attendance</h3>
-            <p>Record student attendance</p>
-          </div>
-          
-          <div>
-            <h3>Upload Marks</h3>
-            <p>Enter exam scores</p>
-          </div>
-          
-          <div>
-            <h3>Create Assignments</h3>
-            <p>Post homework tasks</p>
-          </div>
-          
-          <div>
-            <h3>My Classes</h3>
-            <p>Manage class schedules</p>
-          </div>
-          
-          <div>
-            <h3>Student Reports</h3>
-            <p>View student performance</p>
-          </div>
-          
-          <div>
-            <h3>Events</h3>
-            <p>Create school events</p>
-          </div>
-        </div>
-      </main>
+          <p className="text-gray-600 mt-1">Welcome, {user?.name}</p>
+        </header>
+
+        <main className="p-6 flex-1">
+          {renderContent()}
+        </main>
+      </div>
     </div>
   );
 };
