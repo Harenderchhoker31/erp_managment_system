@@ -7,9 +7,11 @@ const Sidebar = ({ activeDialog, setActiveDialog }) => {
     { id: 'dashboard', label: 'Dashboard' },
     { id: 'students', label: 'Manage Students' },
     { id: 'teachers', label: 'Manage Teachers' },
+    { id: 'classes', label: 'Manage Classes' },
     { id: 'assign', label: 'Assign Classes' },
     { id: 'events', label: 'Events & Notice' },
     { id: 'fees', label: 'Fee Management' },
+    { id: 'salary', label: 'Salary Management' },
   ];
 
   return (
@@ -18,26 +20,25 @@ const Sidebar = ({ activeDialog, setActiveDialog }) => {
         <h1 className="text-xl font-bold text-red-600">EduMate Admin</h1>
         <p className="text-sm text-gray-600 mt-1">Welcome, {user?.name}</p>
       </div>
-      
+
       <nav className="mt-6">
         {menuItems.map((item) => (
           <button
             key={item.id}
             onClick={() => setActiveDialog(item.id)}
-            className={`w-full flex items-center px-6 py-3 text-left transition-colors ${
-              activeDialog === item.id
-                ? 'bg-red-100 text-red-600 border-r-4 border-red-600'
-                : 'text-gray-700 hover:bg-red-50 hover:text-red-600'
-            }`}
+            className={`w-full flex items-center px-6 py-3 text-left transition-colors ${activeDialog === item.id
+              ? 'bg-red-100 text-red-600 border-r-4 border-red-600'
+              : 'text-gray-700 hover:bg-red-50 hover:text-red-600'
+              }`}
           >
             <span className="mr-3 text-lg">{item.icon}</span>
             {item.label}
           </button>
         ))}
       </nav>
-      
+
       <div className="absolute bottom-6 left-6">
-        <button 
+        <button
           onClick={logout}
           className="flex items-center text-gray-600 hover:text-red-600 transition-colors"
         >

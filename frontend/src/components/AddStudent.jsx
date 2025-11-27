@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import axios from 'axios';
+import api from '../utils/api';
 
 const AddStudent = ({ onClose, onSuccess }) => {
   const [formData, setFormData] = useState({
@@ -36,7 +36,7 @@ const AddStudent = ({ onClose, onSuccess }) => {
         phone: formData.fatherPhone,
         admissionDate: formData.admissionDate
       };
-      await axios.post('/api/admin/students', studentData);
+      await api.post('/api/admin/students', studentData);
       onSuccess('Student added successfully');
       onClose();
     } catch (error) {
@@ -50,14 +50,14 @@ const AddStudent = ({ onClose, onSuccess }) => {
       <div className="bg-white rounded-2xl shadow-2xl w-full max-w-2xl max-h-[90vh] overflow-y-auto" onClick={(e) => e.stopPropagation()}>
         <div className="flex justify-between items-center p-6 border-b">
           <h2 className="text-2xl font-bold text-gray-900">Add New Student</h2>
-          <button 
+          <button
             onClick={onClose}
             className="text-gray-400 hover:text-gray-600 text-2xl font-bold"
           >
             ×
           </button>
         </div>
-        
+
         {error && (
           <div className="mx-6 mt-4 bg-red-50 border-l-4 border-red-400 p-4 rounded">
             <p className="text-red-700 text-sm">{error}</p>
@@ -70,9 +70,9 @@ const AddStudent = ({ onClose, onSuccess }) => {
               <label className="block text-sm font-medium text-gray-700 mb-1">Email</label>
               <input
                 type="email"
-                placeholder="student@student.in"
+                placeholder="Email"
                 value={formData.email}
-                onChange={(e) => setFormData({...formData, email: e.target.value})}
+                onChange={(e) => setFormData({ ...formData, email: e.target.value })}
                 className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-transparent"
                 required
               />
@@ -83,7 +83,7 @@ const AddStudent = ({ onClose, onSuccess }) => {
                 type="password"
                 placeholder="Password"
                 value={formData.password}
-                onChange={(e) => setFormData({...formData, password: e.target.value})}
+                onChange={(e) => setFormData({ ...formData, password: e.target.value })}
                 className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-transparent"
                 required
               />
@@ -94,7 +94,7 @@ const AddStudent = ({ onClose, onSuccess }) => {
                 type="text"
                 placeholder="Full Name"
                 value={formData.name}
-                onChange={(e) => setFormData({...formData, name: e.target.value})}
+                onChange={(e) => setFormData({ ...formData, name: e.target.value })}
                 className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-transparent"
                 required
               />
@@ -105,7 +105,7 @@ const AddStudent = ({ onClose, onSuccess }) => {
                 type="text"
                 placeholder="Roll Number"
                 value={formData.rollNo}
-                onChange={(e) => setFormData({...formData, rollNo: e.target.value})}
+                onChange={(e) => setFormData({ ...formData, rollNo: e.target.value })}
                 className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-transparent"
                 required
               />
@@ -116,7 +116,7 @@ const AddStudent = ({ onClose, onSuccess }) => {
                 type="text"
                 placeholder="Class"
                 value={formData.class}
-                onChange={(e) => setFormData({...formData, class: e.target.value.toUpperCase()})}
+                onChange={(e) => setFormData({ ...formData, class: e.target.value.toUpperCase() })}
                 className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-transparent"
                 required
               />
@@ -127,7 +127,7 @@ const AddStudent = ({ onClose, onSuccess }) => {
                 type="text"
                 placeholder="Section"
                 value={formData.section}
-                onChange={(e) => setFormData({...formData, section: e.target.value.toUpperCase()})}
+                onChange={(e) => setFormData({ ...formData, section: e.target.value.toUpperCase() })}
                 className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-transparent"
                 required
               />
@@ -137,7 +137,7 @@ const AddStudent = ({ onClose, onSuccess }) => {
               <input
                 type="date"
                 value={formData.dateOfBirth}
-                onChange={(e) => setFormData({...formData, dateOfBirth: e.target.value})}
+                onChange={(e) => setFormData({ ...formData, dateOfBirth: e.target.value })}
                 className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-transparent"
                 required
               />
@@ -146,7 +146,7 @@ const AddStudent = ({ onClose, onSuccess }) => {
               <label className="block text-sm font-medium text-gray-700 mb-1">Gender</label>
               <select
                 value={formData.gender}
-                onChange={(e) => setFormData({...formData, gender: e.target.value})}
+                onChange={(e) => setFormData({ ...formData, gender: e.target.value })}
                 className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-transparent"
                 required
               >
@@ -159,7 +159,7 @@ const AddStudent = ({ onClose, onSuccess }) => {
               <label className="block text-sm font-medium text-gray-700 mb-1">Blood Group</label>
               <select
                 value={formData.bloodGroup}
-                onChange={(e) => setFormData({...formData, bloodGroup: e.target.value})}
+                onChange={(e) => setFormData({ ...formData, bloodGroup: e.target.value })}
                 className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-transparent"
               >
                 <option value="">Select Blood Group</option>
@@ -178,19 +178,19 @@ const AddStudent = ({ onClose, onSuccess }) => {
               <input
                 type="date"
                 value={formData.admissionDate}
-                onChange={(e) => setFormData({...formData, admissionDate: e.target.value})}
+                onChange={(e) => setFormData({ ...formData, admissionDate: e.target.value })}
                 className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-transparent"
                 required
               />
             </div>
           </div>
-          
+
           <div className="mb-6">
             <label className="block text-sm font-medium text-gray-700 mb-1">Address</label>
             <textarea
               placeholder="Address"
               value={formData.address}
-              onChange={(e) => setFormData({...formData, address: e.target.value})}
+              onChange={(e) => setFormData({ ...formData, address: e.target.value })}
               className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-transparent"
               rows="2"
               required
@@ -206,7 +206,7 @@ const AddStudent = ({ onClose, onSuccess }) => {
                   type="text"
                   placeholder="Father Name"
                   value={formData.fatherName}
-                  onChange={(e) => setFormData({...formData, fatherName: e.target.value})}
+                  onChange={(e) => setFormData({ ...formData, fatherName: e.target.value })}
                   className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-transparent"
                   required
                 />
@@ -217,7 +217,7 @@ const AddStudent = ({ onClose, onSuccess }) => {
                   type="text"
                   placeholder="Mother Name"
                   value={formData.motherName}
-                  onChange={(e) => setFormData({...formData, motherName: e.target.value})}
+                  onChange={(e) => setFormData({ ...formData, motherName: e.target.value })}
                   className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-transparent"
                   required
                 />
@@ -228,7 +228,7 @@ const AddStudent = ({ onClose, onSuccess }) => {
                   type="tel"
                   placeholder="Father Phone"
                   value={formData.fatherPhone}
-                  onChange={(e) => setFormData({...formData, fatherPhone: e.target.value})}
+                  onChange={(e) => setFormData({ ...formData, fatherPhone: e.target.value })}
                   className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-transparent"
                   required
                 />
@@ -239,7 +239,7 @@ const AddStudent = ({ onClose, onSuccess }) => {
                   type="email"
                   placeholder="father@example.com"
                   value={formData.fatherEmail}
-                  onChange={(e) => setFormData({...formData, fatherEmail: e.target.value})}
+                  onChange={(e) => setFormData({ ...formData, fatherEmail: e.target.value })}
                   pattern=".*@.*"
                   title="Email must contain @ symbol"
                   className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-transparent"
@@ -250,8 +250,8 @@ const AddStudent = ({ onClose, onSuccess }) => {
           </div>
 
           <div className="flex justify-end space-x-3">
-            <button 
-              type="button" 
+            <button
+              type="button"
               onClick={onClose}
               className="px-6 py-2 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors"
             >
