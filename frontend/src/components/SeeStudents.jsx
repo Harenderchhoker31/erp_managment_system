@@ -8,6 +8,7 @@ const SeeStudents = ({ onClose, onSuccess, inline = false }) => {
   const [loading, setLoading] = useState(true);
   const [showAddStudent, setShowAddStudent] = useState(false);
   const [editingStudent, setEditingStudent] = useState(null);
+  const [detailStudent, setDetailStudent] = useState(null);
 
   useEffect(() => {
     fetchStudents();
@@ -116,6 +117,9 @@ const SeeStudents = ({ onClose, onSuccess, inline = false }) => {
                     <th className="border border-gray-300 px-4 py-3 text-left text-sm font-semibold">DOB</th>
                     <th className="border border-gray-300 px-4 py-3 text-left text-sm font-semibold">Gender</th>
                     <th className="border border-gray-300 px-4 py-3 text-left text-sm font-semibold">Blood</th>
+                    <th className="border border-gray-300 px-4 py-3 text-left text-sm font-semibold">Category</th>
+                    <th className="border border-gray-300 px-4 py-3 text-left text-sm font-semibold">Religion</th>
+                    <th className="border border-gray-300 px-4 py-3 text-left text-sm font-semibold">Transport</th>
                     <th className="border border-gray-300 px-4 py-3 text-left text-sm font-semibold">Parent</th>
                     <th className="border border-gray-300 px-4 py-3 text-center text-sm font-semibold">Actions</th>
                   </tr>
@@ -130,21 +134,30 @@ const SeeStudents = ({ onClose, onSuccess, inline = false }) => {
                       <td className="border border-gray-300 px-4 py-3 text-sm">{new Date(student.dateOfBirth).toLocaleDateString()}</td>
                       <td className="border border-gray-300 px-4 py-3 text-sm">{student.gender}</td>
                       <td className="border border-gray-300 px-4 py-3 text-sm">{student.bloodGroup || 'N/A'}</td>
+                      <td className="border border-gray-300 px-4 py-3 text-sm">{student.category || 'N/A'}</td>
+                      <td className="border border-gray-300 px-4 py-3 text-sm">{student.religion || 'N/A'}</td>
+                      <td className="border border-gray-300 px-4 py-3 text-sm">{student.transportMode || 'N/A'}</td>
                       <td className="border border-gray-300 px-4 py-3 text-sm">
                         <div>{student.parentName}</div>
                         <div className="text-xs text-gray-500">{student.parentPhone}</div>
                       </td>
                       <td className="border border-gray-300 px-4 py-3 text-center">
-                        <div className="flex justify-center gap-2">
+                        <div className="flex justify-center gap-1">
+                          <button
+                            onClick={() => setDetailStudent(student)}
+                            className="px-2 py-1 bg-green-600 text-white rounded hover:bg-green-700 transition-colors text-xs"
+                          >
+                            Detail
+                          </button>
                           <button
                             onClick={() => setEditingStudent(student)}
-                            className="px-3 py-1 bg-blue-600 text-white rounded hover:bg-blue-700 transition-colors text-sm"
+                            className="px-2 py-1 bg-blue-600 text-white rounded hover:bg-blue-700 transition-colors text-xs"
                           >
                             Edit
                           </button>
                           <button
                             onClick={() => handleDelete(student.id, student.name)}
-                            className="px-3 py-1 bg-red-600 text-white rounded hover:bg-red-700 transition-colors text-sm"
+                            className="px-2 py-1 bg-red-600 text-white rounded hover:bg-red-700 transition-colors text-xs"
                           >
                             Delete
                           </button>
@@ -171,6 +184,47 @@ const SeeStudents = ({ onClose, onSuccess, inline = false }) => {
             onClose={() => setEditingStudent(null)}
             onSuccess={handleEditSuccess}
           />
+        )}
+
+        {detailStudent && (
+          <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
+            <div className="bg-white rounded-lg shadow-xl w-full max-w-md">
+              <div className="p-4 border-b">
+                <h3 className="text-lg font-semibold">Student Details</h3>
+              </div>
+              <div className="p-4 space-y-2">
+                <p><span className="font-medium">Name:</span> {detailStudent.name}</p>
+                <p><span className="font-medium">Roll No:</span> {detailStudent.rollNo}</p>
+                <p><span className="font-medium">Class:</span> {detailStudent.class}-{detailStudent.section}</p>
+                <p><span className="font-medium">Email:</span> {detailStudent.email}</p>
+                <p><span className="font-medium">DOB:</span> {new Date(detailStudent.dateOfBirth).toLocaleDateString()}</p>
+                <p><span className="font-medium">Gender:</span> {detailStudent.gender}</p>
+                <p><span className="font-medium">Address:</span> {detailStudent.address}</p>
+                <p><span className="font-medium">Blood Group:</span> {detailStudent.bloodGroup || 'N/A'}</p>
+                <p><span className="font-medium">Category:</span> {detailStudent.category || 'N/A'}</p>
+                <p><span className="font-medium">Religion:</span> {detailStudent.religion || 'N/A'}</p>
+                <p><span className="font-medium">Nationality:</span> {detailStudent.nationality || 'N/A'}</p>
+                <p><span className="font-medium">Transport:</span> {detailStudent.transportMode || 'N/A'}</p>
+                <p><span className="font-medium">Previous School:</span> {detailStudent.previousSchool || 'N/A'}</p>
+                <p><span className="font-medium">Medical Conditions:</span> {detailStudent.medicalConditions || 'None'}</p>
+                <p><span className="font-medium">Father:</span> {detailStudent.fatherName || (detailStudent.parentName ? detailStudent.parentName.split(' / ')[0] : 'N/A')}</p>
+                <p><span className="font-medium">Mother:</span> {detailStudent.motherName || (detailStudent.parentName ? detailStudent.parentName.split(' / ')[1] : 'N/A')}</p>
+                <p><span className="font-medium">Father Phone:</span> {detailStudent.fatherPhone || detailStudent.parentPhone || 'N/A'}</p>
+                <p><span className="font-medium">Father Email:</span> {detailStudent.fatherEmail || detailStudent.parentEmail || 'N/A'}</p>
+                <p><span className="font-medium">Mother Phone:</span> {detailStudent.motherPhone || 'N/A'}</p>
+                <p><span className="font-medium">Mother Email:</span> {detailStudent.motherEmail || 'N/A'}</p>
+                <p><span className="font-medium">Emergency Contact:</span> {detailStudent.emergencyContact || 'N/A'}</p>
+              </div>
+              <div className="p-4 border-t">
+                <button
+                  onClick={() => setDetailStudent(null)}
+                  className="w-full px-4 py-2 bg-gray-600 text-white rounded hover:bg-gray-700"
+                >
+                  Close
+                </button>
+              </div>
+            </div>
+          </div>
         )}
       </div>
     );

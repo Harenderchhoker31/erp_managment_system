@@ -15,7 +15,16 @@ const EditStudent = ({ student, onClose, onSuccess }) => {
     motherName: student.motherName || '',
     fatherPhone: student.fatherPhone || '',
     fatherEmail: student.fatherEmail || '',
-    bloodGroup: student.bloodGroup || ''
+    motherPhone: student.motherPhone || '',
+    motherEmail: student.motherEmail || '',
+    bloodGroup: student.bloodGroup || '',
+    nationality: student.nationality || '',
+    religion: student.religion || '',
+    category: student.category || '',
+    previousSchool: student.previousSchool || '',
+    medicalConditions: student.medicalConditions || '',
+    emergencyContact: student.emergencyContact || '',
+    transportMode: student.transportMode || ''
   });
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
@@ -129,17 +138,102 @@ const EditStudent = ({ student, onClose, onSuccess }) => {
                 <option value="Female">Female</option>
               </select>
             </div>
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1">Blood Group</label>
+              <select
+                value={formData.bloodGroup}
+                onChange={(e) => setFormData({...formData, bloodGroup: e.target.value})}
+                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-transparent"
+              >
+                <option value="">Select Blood Group</option>
+                <option value="A+">A+</option>
+                <option value="A-">A-</option>
+                <option value="B+">B+</option>
+                <option value="B-">B-</option>
+                <option value="AB+">AB+</option>
+                <option value="AB-">AB-</option>
+                <option value="O+">O+</option>
+                <option value="O-">O-</option>
+              </select>
+            </div>
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1">Nationality</label>
+              <input
+                type="text"
+                value={formData.nationality}
+                onChange={(e) => setFormData({...formData, nationality: e.target.value})}
+                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-transparent"
+              />
+            </div>
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1">Religion</label>
+              <input
+                type="text"
+                value={formData.religion}
+                onChange={(e) => setFormData({...formData, religion: e.target.value})}
+                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-transparent"
+              />
+            </div>
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1">Category</label>
+              <select
+                value={formData.category}
+                onChange={(e) => setFormData({...formData, category: e.target.value})}
+                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-transparent"
+              >
+                <option value="">Select Category</option>
+                <option value="General">General</option>
+                <option value="OBC">OBC</option>
+                <option value="SC">SC</option>
+                <option value="ST">ST</option>
+                <option value="EWS">EWS</option>
+              </select>
+            </div>
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1">Previous School</label>
+              <input
+                type="text"
+                value={formData.previousSchool}
+                onChange={(e) => setFormData({...formData, previousSchool: e.target.value})}
+                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-transparent"
+              />
+            </div>
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1">Transport Mode</label>
+              <select
+                value={formData.transportMode}
+                onChange={(e) => setFormData({...formData, transportMode: e.target.value})}
+                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-transparent"
+              >
+                <option value="">Select Transport</option>
+                <option value="School Bus">School Bus</option>
+                <option value="Private Vehicle">Private Vehicle</option>
+                <option value="Walking">Walking</option>
+                <option value="Public Transport">Public Transport</option>
+              </select>
+            </div>
           </div>
           
-          <div className="mb-6">
-            <label className="block text-sm font-medium text-gray-700 mb-1">Address</label>
-            <textarea
-              value={formData.address}
-              onChange={(e) => setFormData({...formData, address: e.target.value})}
-              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-transparent"
-              rows="2"
-              required
-            />
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1">Address</label>
+              <textarea
+                value={formData.address}
+                onChange={(e) => setFormData({...formData, address: e.target.value})}
+                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-transparent"
+                rows="2"
+                required
+              />
+            </div>
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1">Medical Conditions</label>
+              <textarea
+                value={formData.medicalConditions}
+                onChange={(e) => setFormData({...formData, medicalConditions: e.target.value})}
+                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-transparent"
+                rows="2"
+              />
+            </div>
           </div>
 
           <div className="border-t border-gray-200 pt-6 mb-6">
@@ -181,9 +275,35 @@ const EditStudent = ({ student, onClose, onSuccess }) => {
                   type="email"
                   value={formData.fatherEmail}
                   onChange={(e) => setFormData({...formData, fatherEmail: e.target.value})}
-                  pattern=".*@.*"
                   className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-transparent"
                   required
+                />
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">Mother Phone</label>
+                <input
+                  type="tel"
+                  value={formData.motherPhone}
+                  onChange={(e) => setFormData({...formData, motherPhone: e.target.value})}
+                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-transparent"
+                />
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">Mother Email</label>
+                <input
+                  type="email"
+                  value={formData.motherEmail}
+                  onChange={(e) => setFormData({...formData, motherEmail: e.target.value})}
+                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-transparent"
+                />
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">Emergency Contact</label>
+                <input
+                  type="tel"
+                  value={formData.emergencyContact}
+                  onChange={(e) => setFormData({...formData, emergencyContact: e.target.value})}
+                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-transparent"
                 />
               </div>
             </div>

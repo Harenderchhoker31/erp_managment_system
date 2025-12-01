@@ -51,28 +51,18 @@ const Dashboard = () => {
   return (
     <div className="space-y-6">
       {/* Stats Cards */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
         <div className="bg-white p-6 rounded-lg shadow-sm border">
-          <div className="flex items-center">
-            <div className="p-3 bg-blue-100 rounded-full">
-              <span className="text-2xl">👥</span>
-            </div>
-            <div className="ml-4">
-              <p className="text-sm font-medium text-gray-600">Total Students</p>
-              <p className="text-2xl font-bold text-gray-900">{stats.students}</p>
-            </div>
+          <div className="ml-4">
+            <p className="text-sm font-medium text-gray-600">Total Students</p>
+            <p className="text-2xl font-bold text-gray-900">{stats.students}</p>
           </div>
         </div>
 
         <div className="bg-white p-6 rounded-lg shadow-sm border">
-          <div className="flex items-center">
-            <div className="p-3 bg-green-100 rounded-full">
-              <span className="text-2xl">👨🏫</span>
-            </div>
-            <div className="ml-4">
-              <p className="text-sm font-medium text-gray-600">Total Teachers</p>
-              <p className="text-2xl font-bold text-gray-900">{stats.teachers}</p>
-            </div>
+          <div className="ml-4">
+            <p className="text-sm font-medium text-gray-600">Total Teachers</p>
+            <p className="text-2xl font-bold text-gray-900">{stats.teachers}</p>
           </div>
         </div>
 
@@ -88,17 +78,7 @@ const Dashboard = () => {
           </div>
         </div>
 
-        <div className="bg-white p-6 rounded-lg shadow-sm border">
-          <div className="flex items-center">
-            <div className="p-3 bg-green-100 rounded-full">
-              <span className="text-2xl">✅</span>
-            </div>
-            <div className="ml-4">
-              <p className="text-sm font-medium text-gray-600">Today's Attendance</p>
-              <p className="text-2xl font-bold text-gray-900">{stats.attendance?.present || 0}/{stats.attendance?.total || 0}</p>
-            </div>
-          </div>
-        </div>
+
       </div>
 
       {/* Thought of the Day */}

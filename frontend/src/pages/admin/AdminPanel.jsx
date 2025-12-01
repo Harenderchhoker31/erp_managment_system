@@ -6,6 +6,8 @@ import ManageTeachers from './components/ManageTeachers';
 import ManageClasses from './components/ManageClasses';
 import ViewClasses from './components/ViewClasses';
 import ManageEventsNotices from './components/ManageEventsNotices';
+import SalaryManagement from './components/SalaryManagement';
+import FeeManagement from './components/FeeManagement';
 
 const AdminPanel = () => {
   const [activeDialog, setActiveDialog] = useState('dashboard');
@@ -30,6 +32,10 @@ const AdminPanel = () => {
         return <ManageClasses onSuccess={handleSuccess} />;
       case 'events-notices':
         return <ManageEventsNotices onSuccess={handleSuccess} />;
+      case 'salary':
+        return <SalaryManagement onSuccess={handleSuccess} />;
+      case 'fees':
+        return <FeeManagement onSuccess={handleSuccess} />;
       default:
         return <Dashboard />;
     }
