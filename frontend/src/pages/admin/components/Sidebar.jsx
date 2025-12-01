@@ -4,14 +4,14 @@ const Sidebar = ({ activeDialog, setActiveDialog }) => {
   const { logout, user } = useAuth();
 
   const menuItems = [
-    { id: 'dashboard', label: 'Dashboard', icon: '📊' },
-    { id: 'students', label: 'Students', icon: '👨‍🎓' },
-    { id: 'teachers', label: 'Teachers', icon: '👩‍🏫' },
-    { id: 'view-classes', label: 'Classes', icon: '🏫' },
-    { id: 'assign', label: 'Assign', icon: '📝' },
-    { id: 'events-notices', label: 'Events', icon: '📅' },
-    { id: 'salary', label: 'Salary', icon: '💰' },
-    { id: 'fees', label: 'Fees', icon: '💳' },
+    { id: 'dashboard', label: 'Dashboard'},
+    { id: 'students', label: 'Students'},
+    { id: 'teachers', label: 'Teachers'},
+    { id: 'view-classes', label: 'Classes' },
+    { id: 'assign', label: 'Assign'},
+    { id: 'events-notices', label: 'Events & Notice' },
+    { id: 'salary', label: 'Salary' },
+    { id: 'fees', label: 'Fees' },
   ];
 
   return (

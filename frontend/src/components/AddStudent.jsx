@@ -39,7 +39,7 @@ const AddStudent = ({ onClose, onSuccess }) => {
 
   const fetchClasses = async () => {
     try {
-      const response = await adminAPI.getAllClasses();
+      const response = await api.get('/api/admin/all-classes');
       setClasses(response.data);
     } catch (err) {
       console.error('Failed to fetch classes', err);
@@ -55,7 +55,7 @@ const AddStudent = ({ onClose, onSuccess }) => {
       .filter(c => c.name === selectedClass)
       .map(c => c.section)
       .sort();
-    setAvailableSections(sections);
+    setAvailableSections([...new Set(sections)]);
   };
 
   const handleSubmit = async (e) => {
@@ -82,7 +82,7 @@ const AddStudent = ({ onClose, onSuccess }) => {
   };
 
   // Get unique class names
-  const uniqueClassNames = [...new Set(classes.map(c => c.name))];
+  const uniqueClassNames = [...new Set(classes.map(c => c.name))].sort((a, b) => parseInt(a) - parseInt(b));
 
   return (
     <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50" onClick={onClose}>
@@ -158,8 +158,10 @@ const AddStudent = ({ onClose, onSuccess }) => {
                 required
               >
                 <option value="">Select Class</option>
-                {uniqueClassNames.map(name => (
-                  <option key={name} value={name}>{name}</option>
+                <option value="Pre-Nursery">Pre-Nursery</option>
+                <option value="Nursery">Nursery</option>
+                {uniqueClassNames.filter(name => !['Pre-Nursery', 'Nursery'].includes(name)).map(name => (
+                  <option key={name} value={name}>Class {name}</option>
                 ))}
               </select>
             </div>
@@ -173,9 +175,22 @@ const AddStudent = ({ onClose, onSuccess }) => {
                 disabled={!formData.class}
               >
                 <option value="">Select Section</option>
-                {availableSections.map(section => (
-                  <option key={section} value={section}>{section}</option>
-                ))}
+                {formData.class === '11' || formData.class === '12' ? (
+                  <>
+                    <option value="Arts-A">Arts - A</option>
+                    <option value="Arts-B">Arts - B</option>
+                    <option value="Non-Medical-A">Non-Medical - A</option>
+                    <option value="Non-Medical-B">Non-Medical - B</option>
+                    <option value="Medical-A">Medical - A</option>
+                    <option value="Medical-B">Medical - B</option>
+                    <option value="Commerce-A">Commerce - A</option>
+                    <option value="Commerce-B">Commerce - B</option>
+                  </>
+                ) : (
+                  availableSections.map(section => (
+                    <option key={section} value={section}>Section {section}</option>
+                  ))
+                )}
               </select>
             </div>
             <div>

@@ -9,6 +9,7 @@ const SeeStudents = ({ onClose, onSuccess, inline = false }) => {
   const [showAddStudent, setShowAddStudent] = useState(false);
   const [editingStudent, setEditingStudent] = useState(null);
   const [detailStudent, setDetailStudent] = useState(null);
+  const [deleteStudent, setDeleteStudent] = useState(null);
 
   useEffect(() => {
     fetchStudents();
@@ -24,15 +25,15 @@ const SeeStudents = ({ onClose, onSuccess, inline = false }) => {
     setLoading(false);
   };
 
-  const handleDelete = async (studentId, studentName) => {
-    if (window.confirm(`Are you sure you want to delete ${studentName}? This action cannot be undone.`)) {
-      try {
-        await axios.delete(`/api/admin/students/${studentId}`);
-        setStudents(students.filter(s => s.id !== studentId));
-        onSuccess('Student deleted successfully');
-      } catch (error) {
-        console.error('Failed to delete student');
-      }
+  const handleDelete = async () => {
+    try {
+      await axios.delete(`/api/admin/students/${deleteStudent.id}`);
+      setStudents(students.filter(s => s.id !== deleteStudent.id));
+      onSuccess('Student deleted successfully');
+      setDeleteStudent(null);
+    } catch (error) {
+      console.error('Failed to delete student');
+      setDeleteStudent(null);
     }
   };
 
@@ -156,7 +157,7 @@ const SeeStudents = ({ onClose, onSuccess, inline = false }) => {
                             Edit
                           </button>
                           <button
-                            onClick={() => handleDelete(student.id, student.name)}
+                            onClick={() => setDeleteStudent(student)}
                             className="px-2 py-1 bg-red-600 text-white rounded hover:bg-red-700 transition-colors text-xs"
                           >
                             Delete
@@ -221,6 +222,34 @@ const SeeStudents = ({ onClose, onSuccess, inline = false }) => {
                   className="w-full px-4 py-2 bg-gray-600 text-white rounded hover:bg-gray-700"
                 >
                   Close
+                </button>
+              </div>
+            </div>
+          </div>
+        )}
+
+        {deleteStudent && (
+          <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
+            <div className="bg-white rounded-lg shadow-xl w-full max-w-md">
+              <div className="p-4 border-b">
+                <h3 className="text-lg font-semibold text-red-600">Confirm Delete</h3>
+              </div>
+              <div className="p-4">
+                <p>Are you sure you want to delete <span className="font-semibold">{deleteStudent.name}</span>?</p>
+                <p className="text-sm text-gray-600 mt-2">This action cannot be undone.</p>
+              </div>
+              <div className="p-4 border-t flex justify-end space-x-3">
+                <button
+                  onClick={() => setDeleteStudent(null)}
+                  className="px-4 py-2 border rounded hover:bg-gray-50"
+                >
+                  Cancel
+                </button>
+                <button
+                  onClick={handleDelete}
+                  className="px-4 py-2 bg-red-600 text-white rounded hover:bg-red-700"
+                >
+                  Delete
                 </button>
               </div>
             </div>
@@ -300,7 +329,7 @@ const SeeStudents = ({ onClose, onSuccess, inline = false }) => {
                             Edit
                           </button>
                           <button
-                            onClick={() => handleDelete(student.id, student.name)}
+                            onClick={() => setDeleteStudent(student)}
                             className="bg-red-600 text-white px-2 py-1 rounded text-xs hover:bg-red-700 transition-colors"
                           >
                             Delete

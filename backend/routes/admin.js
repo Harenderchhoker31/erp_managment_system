@@ -287,23 +287,35 @@ router.get('/classes', authenticateToken, authorizeRole(['ADMIN']), async (req, 
   }
 });
 
-// Get all master classes (seeded classes) with student counts
+// Get all master classes (seeded classes) with student counts and class teachers
 router.get('/all-classes', authenticateToken, authorizeRole(['ADMIN']), async (req, res) => {
   try {
     // Fetch all classes
     const classes = await prisma.class.findMany({
-      orderBy: [
-        { name: 'asc' },
-        { section: 'asc' }
-      ]
+      include: {
+        teacher: {
+          select: { name: true, employeeId: true }
+        }
+      }
     });
 
     // Fetch all students to calculate counts
-    // Note: In a larger system, this should be an aggregation query
     const students = await prisma.student.findMany({
       select: {
         class: true,
         section: true
+      }
+    });
+
+    // Fetch class teachers from TeacherClass assignments
+    const classTeachers = await prisma.teacherClass.findMany({
+      where: {
+        isClassTeacher: true
+      },
+      include: {
+        teacher: {
+          select: { name: true, employeeId: true }
+        }
       }
     });
 
@@ -314,13 +326,21 @@ router.get('/all-classes', authenticateToken, authorizeRole(['ADMIN']), async (r
       return acc;
     }, {});
 
-    // Add count to each class object
-    const classesWithCounts = classes.map(cls => ({
+    // Map class teachers
+    const classTeacherMap = classTeachers.reduce((acc, ct) => {
+      const key = `${ct.className}-${ct.section}`;
+      acc[key] = ct.teacher;
+      return acc;
+    }, {});
+
+    // Add count and class teacher to each class object
+    const classesWithData = classes.map(cls => ({
       ...cls,
-      studentCount: studentCounts[`${cls.name}-${cls.section}`] || 0
+      studentCount: studentCounts[`${cls.name}-${cls.section}`] || 0,
+      classTeacher: cls.teacher || classTeacherMap[`${cls.name}-${cls.section}`] || null
     }));
 
-    res.json(classesWithCounts);
+    res.json(classesWithData);
   } catch (error) {
     res.status(500).json({ error: error.message });
   }
@@ -340,6 +360,37 @@ router.get('/students/class/:className/:section', authenticateToken, authorizeRo
       }
     });
     res.json(students);
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+});
+
+// Add Class
+router.post('/create-class', authenticateToken, authorizeRole(['ADMIN']), async (req, res) => {
+  try {
+    const { name, section } = req.body;
+    
+    const classData = await prisma.class.create({
+      data: {
+        name,
+        section
+      }
+    });
+    
+    res.status(201).json({ message: 'Class created successfully', class: classData });
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+});
+
+// Delete Class
+router.delete('/classes/:id', authenticateToken, authorizeRole(['ADMIN']), async (req, res) => {
+  try {
+    const { id } = req.params;
+    await prisma.class.delete({
+      where: { id }
+    });
+    res.json({ message: 'Class deleted successfully' });
   } catch (error) {
     res.status(500).json({ error: error.message });
   }

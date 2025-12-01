@@ -64,6 +64,17 @@ model Teacher {
   gender      String
   address     String
   phone       String
+  alternatePhone String?
+  emergencyContact String?
+  nationality String?
+  religion    String?
+  category    String?
+  maritalStatus String?
+  bloodGroup  String?
+  aadharNumber String?
+  panNumber   String?
+  bankAccount String?
+  ifscCode    String?
   salary      Float?
   joiningDate DateTime @default(now())
   createdAt   DateTime @default(now())

@@ -15,7 +15,18 @@ const AddTeacher = ({ onClose, onSuccess }) => {
     address: '',
     phone: '',
     salary: '',
-    joiningDate: ''
+    joiningDate: '',
+    alternatePhone: '',
+    emergencyContact: '',
+    nationality: '',
+    religion: '',
+    category: '',
+    maritalStatus: '',
+    bloodGroup: '',
+    aadharNumber: '',
+    panNumber: '',
+    bankAccount: '',
+    ifscCode: ''
   });
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
@@ -185,6 +196,133 @@ const AddTeacher = ({ onClose, onSuccess }) => {
                 onChange={(e) => setFormData({ ...formData, joiningDate: e.target.value })}
                 className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-transparent"
                 required
+              />
+            </div>
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1">Alternate Phone</label>
+              <input
+                type="tel"
+                placeholder="Alternate Phone"
+                value={formData.alternatePhone}
+                onChange={(e) => setFormData({ ...formData, alternatePhone: e.target.value })}
+                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-transparent"
+              />
+            </div>
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1">Emergency Contact</label>
+              <input
+                type="tel"
+                placeholder="Emergency Contact"
+                value={formData.emergencyContact}
+                onChange={(e) => setFormData({ ...formData, emergencyContact: e.target.value })}
+                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-transparent"
+              />
+            </div>
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1">Blood Group</label>
+              <select
+                value={formData.bloodGroup}
+                onChange={(e) => setFormData({ ...formData, bloodGroup: e.target.value })}
+                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-transparent"
+              >
+                <option value="">Select Blood Group</option>
+                <option value="A+">A+</option>
+                <option value="A-">A-</option>
+                <option value="B+">B+</option>
+                <option value="B-">B-</option>
+                <option value="AB+">AB+</option>
+                <option value="AB-">AB-</option>
+                <option value="O+">O+</option>
+                <option value="O-">O-</option>
+              </select>
+            </div>
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1">Nationality</label>
+              <input
+                type="text"
+                placeholder="Nationality"
+                value={formData.nationality}
+                onChange={(e) => setFormData({ ...formData, nationality: e.target.value })}
+                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-transparent"
+              />
+            </div>
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1">Religion</label>
+              <input
+                type="text"
+                placeholder="Religion"
+                value={formData.religion}
+                onChange={(e) => setFormData({ ...formData, religion: e.target.value })}
+                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-transparent"
+              />
+            </div>
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1">Category</label>
+              <select
+                value={formData.category}
+                onChange={(e) => setFormData({ ...formData, category: e.target.value })}
+                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-transparent"
+              >
+                <option value="">Select Category</option>
+                <option value="General">General</option>
+                <option value="OBC">OBC</option>
+                <option value="SC">SC</option>
+                <option value="ST">ST</option>
+                <option value="EWS">EWS</option>
+              </select>
+            </div>
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1">Marital Status</label>
+              <select
+                value={formData.maritalStatus}
+                onChange={(e) => setFormData({ ...formData, maritalStatus: e.target.value })}
+                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-transparent"
+              >
+                <option value="">Select Status</option>
+                <option value="Single">Single</option>
+                <option value="Married">Married</option>
+                <option value="Divorced">Divorced</option>
+                <option value="Widowed">Widowed</option>
+              </select>
+            </div>
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1">Aadhar Number</label>
+              <input
+                type="text"
+                placeholder="Aadhar Number"
+                value={formData.aadharNumber}
+                onChange={(e) => setFormData({ ...formData, aadharNumber: e.target.value })}
+                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-transparent"
+              />
+            </div>
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1">PAN Number</label>
+              <input
+                type="text"
+                placeholder="PAN Number"
+                value={formData.panNumber}
+                onChange={(e) => setFormData({ ...formData, panNumber: e.target.value })}
+                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-transparent"
+              />
+            </div>
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1">Bank Account</label>
+              <input
+                type="text"
+                placeholder="Bank Account Number"
+                value={formData.bankAccount}
+                onChange={(e) => setFormData({ ...formData, bankAccount: e.target.value })}
+                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-transparent"
+              />
+            </div>
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1">IFSC Code</label>
+              <input
+                type="text"
+                placeholder="IFSC Code"
+                value={formData.ifscCode}
+                onChange={(e) => setFormData({ ...formData, ifscCode: e.target.value })}
+                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-transparent"
               />
             </div>
           </div>
