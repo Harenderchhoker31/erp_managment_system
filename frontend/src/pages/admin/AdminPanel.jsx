@@ -5,6 +5,7 @@ import ManageStudents from './components/ManageStudents';
 import ManageTeachers from './components/ManageTeachers';
 import ManageClasses from './components/ManageClasses';
 import ViewClasses from './components/ViewClasses';
+import ManageEventsNotices from './components/ManageEventsNotices';
 
 const AdminPanel = () => {
   const [activeDialog, setActiveDialog] = useState('dashboard');
@@ -27,6 +28,8 @@ const AdminPanel = () => {
         return <ViewClasses />;
       case 'assign':
         return <ManageClasses onSuccess={handleSuccess} />;
+      case 'events-notices':
+        return <ManageEventsNotices onSuccess={handleSuccess} />;
       default:
         return <Dashboard />;
     }
