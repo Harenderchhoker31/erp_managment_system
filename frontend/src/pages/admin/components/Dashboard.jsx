@@ -10,6 +10,8 @@ const Dashboard = () => {
   const [upcomingEvents, setUpcomingEvents] = useState([]);
   const [recentNotices, setRecentNotices] = useState([]);
   const [feeStats, setFeeStats] = useState({ paid: 0, unpaid: 0 });
+  const [selectedMonth, setSelectedMonth] = useState(new Date().getMonth() + 1);
+  const [selectedYear, setSelectedYear] = useState(new Date().getFullYear());
 
   useEffect(() => {
     fetchStats();
@@ -17,6 +19,10 @@ const Dashboard = () => {
     fetchRecentNotices();
     fetchFeeStats();
   }, []);
+
+  useEffect(() => {
+    fetchFeeStats();
+  }, [selectedMonth, selectedYear]);
 
   const fetchStats = async () => {
     try {
@@ -66,9 +72,6 @@ const Dashboard = () => {
 
   const fetchFeeStats = async () => {
     try {
-      const currentMonth = new Date().getMonth() + 1;
-      const currentYear = new Date().getFullYear();
-      
       const [studentsRes, feesRes] = await Promise.all([
         api.get('/api/admin/students'),
         api.get('/api/admin/fees')
@@ -76,8 +79,8 @@ const Dashboard = () => {
       
       const totalStudents = studentsRes.data.length;
       const paidFees = feesRes.data.filter(f => 
-        f.month === currentMonth && 
-        f.year === currentYear && 
+        f.month === selectedMonth && 
+        f.year === selectedYear && 
         f.status === 'PAID'
       ).length;
       
@@ -129,7 +132,27 @@ const Dashboard = () => {
 
         <div className="bg-white p-6 rounded-lg shadow-sm border">
           <div className="ml-4">
-            <p className="text-sm font-medium text-gray-600">Fee Status</p>
+            <p className="text-sm font-medium text-gray-600 mb-2">Fee Status</p>
+            <select
+              value={`${selectedYear}-${String(selectedMonth).padStart(2, '0')}`}
+              onChange={(e) => {
+                const [year, month] = e.target.value.split('-');
+                setSelectedYear(parseInt(year));
+                setSelectedMonth(parseInt(month));
+              }}
+              className="w-full px-2 py-1 border rounded text-xs mb-3"
+            >
+              {Array.from({ length: 12 }, (_, i) => {
+                const month = i + 1;
+                const year = selectedYear;
+                const monthNames = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+                return (
+                  <option key={`${year}-${month}`} value={`${year}-${String(month).padStart(2, '0')}`}>
+                    {monthNames[month - 1]} {year}
+                  </option>
+                );
+              })}
+            </select>
             <div className="space-y-1">
               <div className="flex justify-between">
                 <span className="text-sm text-green-600">Paid:</span>

@@ -203,25 +203,59 @@ const SeeTeachers = ({ onClose, onSuccess, inline = false }) => {
           <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
             <div className="bg-white rounded-lg shadow-xl w-full max-w-md">
               <div className="p-4 border-b">
-                <h3 className="text-lg font-semibold text-red-600">Confirm Delete</h3>
+                <h3 className="text-lg font-semibold text-red-600">Remove Teacher</h3>
               </div>
               <div className="p-4">
-                <p>Are you sure you want to delete <span className="font-semibold">{deleteTeacher.name}</span>?</p>
-                <p className="text-sm text-gray-600 mt-2">This action cannot be undone.</p>
+                <p>Removing <span className="font-semibold">{deleteTeacher.name}</span> from the system.</p>
+                <p className="text-sm text-gray-600 mt-2">Please generate migration certificate before removal.</p>
               </div>
-              <div className="p-4 border-t flex justify-end space-x-3">
+              <div className="p-4 border-t space-y-3">
                 <button
-                  onClick={() => setDeleteTeacher(null)}
-                  className="px-4 py-2 border rounded hover:bg-gray-50"
+                  onClick={() => {
+                    // Generate and download migration certificate
+                    const doc = `
+                      MIGRATION CERTIFICATE
+                      
+                      School: EduMate School
+                      
+                      Teacher Name: ${deleteTeacher.name}
+                      Employee ID: ${deleteTeacher.employeeId}
+                      Subject: ${deleteTeacher.subject}
+                      Qualification: ${deleteTeacher.qualification}
+                      Experience: ${deleteTeacher.experience} years
+                      Date of Birth: ${new Date(deleteTeacher.dateOfBirth).toLocaleDateString()}
+                      Joining Date: ${new Date(deleteTeacher.joiningDate).toLocaleDateString()}
+                      
+                      Date of Issue: ${new Date().toLocaleDateString()}
+                      
+                      Principal Signature
+                    `;
+                    const blob = new Blob([doc], { type: 'text/plain' });
+                    const url = URL.createObjectURL(blob);
+                    const a = document.createElement('a');
+                    a.href = url;
+                    a.download = `Migration_Certificate_${deleteTeacher.name}_${deleteTeacher.employeeId}.txt`;
+                    a.click();
+                    URL.revokeObjectURL(url);
+                  }}
+                  className="w-full px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700"
                 >
-                  Cancel
+                  Generate & Download Migration Certificate
                 </button>
-                <button
-                  onClick={handleDelete}
-                  className="px-4 py-2 bg-red-600 text-white rounded hover:bg-red-700"
-                >
-                  Delete
-                </button>
+                <div className="flex justify-end space-x-3">
+                  <button
+                    onClick={() => setDeleteTeacher(null)}
+                    className="px-4 py-2 border rounded hover:bg-gray-50"
+                  >
+                    Cancel
+                  </button>
+                  <button
+                    onClick={handleDelete}
+                    className="px-4 py-2 bg-red-600 text-white rounded hover:bg-red-700"
+                  >
+                    Remove Teacher
+                  </button>
+                </div>
               </div>
             </div>
           </div>

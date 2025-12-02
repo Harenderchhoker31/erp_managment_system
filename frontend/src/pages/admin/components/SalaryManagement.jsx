@@ -105,7 +105,18 @@ const SalaryManagement = ({ onSuccess }) => {
   return (
     <div className="space-y-6">
       <div className="flex justify-between items-center">
-        <h3 className="text-xl font-semibold">Salary Management</h3>
+        <div>
+          <h3 className="text-xl font-semibold">Salary Management</h3>
+          <p className="text-sm text-gray-600 mt-1">
+            Unpaid Salaries: <span className="font-medium text-red-600">
+              {filteredTeachers.filter(teacher => {
+                const isProcessed = isTeacherProcessed(teacher.id);
+                const salaryRecord = getTeacherSalaryRecord(teacher.id);
+                return !isProcessed || salaryRecord?.status === 'PENDING';
+              }).length}
+            </span>
+          </p>
+        </div>
         <div className="flex gap-4 items-center">
           <input
             type="text"

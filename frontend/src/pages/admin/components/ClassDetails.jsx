@@ -4,26 +4,56 @@ import api from '../../../utils/api';
 const ClassDetails = ({ classData, onBack }) => {
   const [students, setStudents] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [unpaidCount, setUnpaidCount] = useState(0);
+  const [selectedMonth, setSelectedMonth] = useState(new Date().getMonth() + 1);
+  const [selectedYear, setSelectedYear] = useState(new Date().getFullYear());
 
 
   useEffect(() => {
     fetchClassData();
   }, [classData]);
 
+  useEffect(() => {
+    if (students.length > 0) {
+      fetchUnpaidCount();
+    }
+  }, [selectedMonth, selectedYear, students.length]);
+
   const fetchClassData = async () => {
     try {
-      const response = await api.get(`/api/admin/students/class/${classData.name}/${classData.section}`);
-      setStudents(response.data);
+      const studentsRes = await api.get(`/api/admin/students/class/${classData.name}/${classData.section}`);
+      setStudents(studentsRes.data);
+      await fetchUnpaidCount();
     } catch (error) {
       console.error('Failed to fetch class data');
     }
     setLoading(false);
   };
 
+  const fetchUnpaidCount = async () => {
+    try {
+      const [studentsRes, feesRes] = await Promise.all([
+        api.get(`/api/admin/students/class/${classData.name}/${classData.section}`),
+        api.get('/api/admin/fees')
+      ]);
+      
+      const classStudents = studentsRes.data;
+      const paidStudentIds = new Set(
+        feesRes.data
+          .filter(f => f.month === selectedMonth && f.year === selectedYear && f.status === 'PAID')
+          .map(f => f.studentId)
+      );
+      
+      const unpaid = classStudents.filter(s => !paidStudentIds.has(s.id)).length;
+      setUnpaidCount(unpaid);
+    } catch (error) {
+      console.error('Failed to fetch unpaid count');
+    }
+  };
+
 
 
   const presentStudents = Math.floor(students.length * 0.85);
-  const unpaidFeeStudents = Math.floor(students.length * 0.15);
 
   return (
     <div className="flex h-full">
@@ -122,14 +152,34 @@ const ClassDetails = ({ classData, onBack }) => {
         {/* Fee Status */}
         <div className="bg-white rounded-lg p-4 mb-4 shadow-sm">
           <h4 className="font-medium text-gray-900 mb-2">Fee Status</h4>
+          <select
+            value={`${selectedYear}-${String(selectedMonth).padStart(2, '0')}`}
+            onChange={(e) => {
+              const [year, month] = e.target.value.split('-');
+              setSelectedYear(parseInt(year));
+              setSelectedMonth(parseInt(month));
+            }}
+            className="w-full px-2 py-1 border rounded text-sm mb-3"
+          >
+            {Array.from({ length: 12 }, (_, i) => {
+              const month = i + 1;
+              const year = selectedYear;
+              const monthNames = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+              return (
+                <option key={`${year}-${month}`} value={`${year}-${String(month).padStart(2, '0')}`}>
+                  {monthNames[month - 1]} {year}
+                </option>
+              );
+            })}
+          </select>
           <div className="space-y-2">
             <div className="flex justify-between">
               <span>Paid:</span>
-              <span className="font-medium text-green-600">{students.length - unpaidFeeStudents}</span>
+              <span className="font-medium text-green-600">{students.length - unpaidCount}</span>
             </div>
             <div className="flex justify-between">
               <span>Unpaid:</span>
-              <span className="font-medium text-red-600">{unpaidFeeStudents}</span>
+              <span className="font-medium text-red-600">{unpaidCount}</span>
             </div>
           </div>
         </div>

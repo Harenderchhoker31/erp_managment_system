@@ -228,25 +228,58 @@ const SeeStudents = ({ onClose, onSuccess, inline = false }) => {
           <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
             <div className="bg-white rounded-lg shadow-xl w-full max-w-md">
               <div className="p-4 border-b">
-                <h3 className="text-lg font-semibold text-red-600">Confirm Delete</h3>
+                <h3 className="text-lg font-semibold text-red-600">Remove Student</h3>
               </div>
               <div className="p-4">
-                <p>Are you sure you want to delete <span className="font-semibold">{deleteStudent.name}</span>?</p>
-                <p className="text-sm text-gray-600 mt-2">This action cannot be undone.</p>
+                <p>Removing <span className="font-semibold">{deleteStudent.name}</span> from the system.</p>
+                <p className="text-sm text-gray-600 mt-2">Please generate transfer certificate before removal.</p>
               </div>
-              <div className="p-4 border-t flex justify-end space-x-3">
+              <div className="p-4 border-t space-y-3">
                 <button
-                  onClick={() => setDeleteStudent(null)}
-                  className="px-4 py-2 border rounded hover:bg-gray-50"
+                  onClick={() => {
+                    // Generate and download transfer certificate
+                    const doc = `
+                      TRANSFER CERTIFICATE
+                      
+                      School: EduMate School
+                      
+                      Student Name: ${deleteStudent.name}
+                      Roll Number: ${deleteStudent.rollNo}
+                      Class: ${deleteStudent.class}-${deleteStudent.section}
+                      Date of Birth: ${new Date(deleteStudent.dateOfBirth).toLocaleDateString()}
+                      Father's Name: ${deleteStudent.fatherName || 'N/A'}
+                      Mother's Name: ${deleteStudent.motherName || 'N/A'}
+                      
+                      Date of Issue: ${new Date().toLocaleDateString()}
+                      
+                      Principal Signature
+                    `;
+                    const blob = new Blob([doc], { type: 'text/plain' });
+                    const url = URL.createObjectURL(blob);
+                    const a = document.createElement('a');
+                    a.href = url;
+                    a.download = `Transfer_Certificate_${deleteStudent.name}_${deleteStudent.rollNo}.txt`;
+                    a.click();
+                    URL.revokeObjectURL(url);
+                  }}
+                  className="w-full px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700"
                 >
-                  Cancel
+                  Generate & Download Transfer Certificate
                 </button>
-                <button
-                  onClick={handleDelete}
-                  className="px-4 py-2 bg-red-600 text-white rounded hover:bg-red-700"
-                >
-                  Delete
-                </button>
+                <div className="flex justify-end space-x-3">
+                  <button
+                    onClick={() => setDeleteStudent(null)}
+                    className="px-4 py-2 border rounded hover:bg-gray-50"
+                  >
+                    Cancel
+                  </button>
+                  <button
+                    onClick={handleDelete}
+                    className="px-4 py-2 bg-red-600 text-white rounded hover:bg-red-700"
+                  >
+                    Remove Student
+                  </button>
+                </div>
               </div>
             </div>
           </div>
