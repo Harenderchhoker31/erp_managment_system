@@ -1,6 +1,87 @@
 import { useState, useEffect } from 'react';
 import api from '../../../utils/api';
 
+const Calendar = ({ events, onDateSelect }) => {
+  const [currentDate, setCurrentDate] = useState(new Date());
+  
+  const getDaysInMonth = (date) => {
+    return new Date(date.getFullYear(), date.getMonth() + 1, 0).getDate();
+  };
+  
+  const getFirstDayOfMonth = (date) => {
+    return new Date(date.getFullYear(), date.getMonth(), 1).getDay();
+  };
+  
+  const getEventsForDate = (day) => {
+    const dateStr = `${currentDate.getFullYear()}-${String(currentDate.getMonth() + 1).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
+    return events.filter(event => event.date.startsWith(dateStr));
+  };
+  
+  const daysInMonth = getDaysInMonth(currentDate);
+  const firstDay = getFirstDayOfMonth(currentDate);
+  const days = [];
+  
+  for (let i = 0; i < firstDay; i++) {
+    days.push(null);
+  }
+  
+  for (let day = 1; day <= daysInMonth; day++) {
+    days.push(day);
+  }
+  
+  const monthNames = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
+  
+  return (
+    <div className="bg-white p-4 rounded-lg shadow">
+      <div className="flex justify-between items-center mb-4">
+        <button 
+          onClick={() => setCurrentDate(new Date(currentDate.getFullYear(), currentDate.getMonth() - 1))}
+          className="px-3 py-1 bg-gray-200 rounded hover:bg-gray-300"
+        >
+          ‹
+        </button>
+        <h3 className="text-lg font-semibold">
+          {monthNames[currentDate.getMonth()]} {currentDate.getFullYear()}
+        </h3>
+        <button 
+          onClick={() => setCurrentDate(new Date(currentDate.getFullYear(), currentDate.getMonth() + 1))}
+          className="px-3 py-1 bg-gray-200 rounded hover:bg-gray-300"
+        >
+          ›
+        </button>
+      </div>
+      
+      <div className="grid grid-cols-7 gap-1 text-center text-sm">
+        {['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'].map(day => (
+          <div key={day} className="font-semibold p-2 text-gray-600">{day}</div>
+        ))}
+        
+        {days.map((day, index) => {
+          const dayEvents = day ? getEventsForDate(day) : [];
+          return (
+            <div 
+              key={index} 
+              className={`p-2 h-12 border rounded cursor-pointer hover:bg-gray-50 ${
+                day ? 'bg-white' : 'bg-gray-100'
+              } ${dayEvents.length > 0 ? 'bg-blue-50 border-blue-200' : ''}`}
+              onClick={() => day && onDateSelect && onDateSelect(day)}
+            >
+              {day && (
+                <>
+                  <div className="text-sm">{day}</div>
+                  {dayEvents.length > 0 && (
+                    <div className="w-2 h-2 bg-blue-500 rounded-full mx-auto"></div>
+                  )}
+                </>
+              )}
+            </div>
+          );
+        })}
+      </div>
+    </div>
+  );
+};
+
 const ManageEventsNotices = ({ onSuccess }) => {
   const [activeTab, setActiveTab] = useState('events');
   const [events, setEvents] = useState([]);
@@ -160,23 +241,54 @@ const ManageEventsNotices = ({ onSuccess }) => {
       )}
 
       {/* Content */}
-      <div className="grid gap-4">
-        {activeTab === 'events' && events.map((event) => (
-          <div key={event.id} className="bg-white p-4 rounded-lg shadow">
-            <h4 className="font-semibold">{event.title}</h4>
-            <p className="text-gray-600 mt-1">{event.description}</p>
-            <p className="text-sm text-blue-600 mt-2">{new Date(event.date).toLocaleString()}</p>
+      {activeTab === 'events' ? (
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+          <div>
+            <h4 className="text-lg font-semibold mb-4">Calendar View</h4>
+            <Calendar events={events} />
           </div>
-        ))}
-        
-        {activeTab === 'notices' && notices.map((notice) => (
-          <div key={notice.id} className="bg-white p-4 rounded-lg shadow">
-            <h4 className="font-semibold">{notice.title}</h4>
-            <p className="text-gray-600 mt-1">{notice.message}</p>
-            <span className="inline-block mt-2 px-2 py-1 bg-gray-100 text-xs rounded">{notice.type}</span>
+          <div>
+            <h4 className="text-lg font-semibold mb-4">Upcoming Events</h4>
+            <div className="space-y-4 max-h-96 overflow-y-auto">
+              {events.map((event) => (
+                <div key={event.id} className="bg-white p-4 rounded-lg shadow border-l-4 border-blue-500">
+                  <h5 className="font-semibold text-gray-800">{event.title}</h5>
+                  <p className="text-gray-600 mt-1 text-sm">{event.description}</p>
+                  <p className="text-sm text-blue-600 mt-2 font-medium">
+                    {new Date(event.date).toLocaleDateString()} at {new Date(event.date).toLocaleTimeString()}
+                  </p>
+                </div>
+              ))}
+            </div>
           </div>
-        ))}
-      </div>
+        </div>
+      ) : (
+        <div>
+          <h4 className="text-lg font-semibold mb-4">All Notices</h4>
+          <div className="grid gap-4">
+            {notices.map((notice) => (
+              <div key={notice.id} className="bg-white p-4 rounded-lg shadow">
+                <div className="flex justify-between items-start">
+                  <h5 className="font-semibold text-gray-800">{notice.title}</h5>
+                  <span className={`px-2 py-1 text-xs rounded ${
+                    notice.type === 'GENERAL' ? 'bg-gray-100 text-gray-800' :
+                    notice.type === 'ATTENDANCE' ? 'bg-yellow-100 text-yellow-800' :
+                    notice.type === 'MARKS' ? 'bg-green-100 text-green-800' :
+                    notice.type === 'EVENT' ? 'bg-blue-100 text-blue-800' :
+                    'bg-red-100 text-red-800'
+                  }`}>
+                    {notice.type}
+                  </span>
+                </div>
+                <p className="text-gray-600 mt-2">{notice.message}</p>
+                <p className="text-xs text-gray-500 mt-3">
+                  Created: {new Date(notice.createdAt).toLocaleDateString()}
+                </p>
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
     </div>
   );
 };

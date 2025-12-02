@@ -13,6 +13,8 @@ const ManageClasses = ({ onSuccess }) => {
     isClassTeacher: false
   });
   const [availableSections, setAvailableSections] = useState([]);
+  const [selectedClass, setSelectedClass] = useState(null);
+  const [classTeachers, setClassTeachers] = useState([]);
 
   useEffect(() => {
     fetchTeachers();
@@ -78,6 +80,19 @@ const ManageClasses = ({ onSuccess }) => {
   };
 
   const uniqueClassNames = [...new Set(classes.map(c => c.name))].sort((a, b) => parseInt(a) - parseInt(b));
+
+  const handleRemoveAssignment = async (assignmentId) => {
+    try {
+      await api.delete(`/api/admin/teacher-classes/${assignmentId}`);
+      fetchAssignments();
+      if (selectedClass) {
+        const updatedTeachers = classTeachers.filter(t => t.id !== assignmentId);
+        setClassTeachers(updatedTeachers);
+      }
+    } catch (error) {
+      console.error('Failed to remove assignment');
+    }
+  };
 
   return (
     <div className="space-y-6">
@@ -178,40 +193,107 @@ const ManageClasses = ({ onSuccess }) => {
       </div>
 
       <div className="bg-white rounded-lg shadow overflow-hidden">
-        <h4 className="text-lg font-semibold p-4 border-b">Current Assignments</h4>
+        <h4 className="text-lg font-semibold p-4 border-b">All Classes</h4>
         <table className="w-full">
           <thead className="bg-gray-50">
             <tr>
-              <th className="px-4 py-3 text-left">Teacher</th>
-              <th className="px-4 py-3 text-left">Class</th>
-              <th className="px-4 py-3 text-left">Section</th>
-              <th className="px-4 py-3 text-left">Subject</th>
-              <th className="px-4 py-3 text-left">Role</th>
+              <th className="px-4 py-3 text-left text-sm font-semibold">Class Name</th>
+              <th className="px-4 py-3 text-left text-sm font-semibold">Section</th>
+              <th className="px-4 py-3 text-left text-sm font-semibold">Class Teacher</th>
+              <th className="px-4 py-3 text-left text-sm font-semibold">Total Teachers</th>
+              <th className="px-4 py-3 text-center text-sm font-semibold">Action</th>
             </tr>
           </thead>
           <tbody>
-            {assignments.map((assignment) => (
-              <tr key={assignment.id} className="border-t">
-                <td className="px-4 py-3">{assignment.teacher?.name}</td>
-                <td className="px-4 py-3">Class {assignment.className}</td>
-                <td className="px-4 py-3">Section {assignment.section}</td>
-                <td className="px-4 py-3">{assignment.subject}</td>
-                <td className="px-4 py-3">
-                  {assignment.isClassTeacher ? (
-                    <span className="px-2 py-1 bg-green-100 text-green-800 rounded text-xs">
-                      Class Teacher
-                    </span>
-                  ) : (
-                    <span className="px-2 py-1 bg-blue-100 text-blue-800 rounded text-xs">
-                      Subject Teacher
-                    </span>
-                  )}
-                </td>
-              </tr>
-            ))}
+            {classes.sort((a, b) => {
+              const order = ['Pre-Nursery', 'Nursery', '1', '2', '3', '4', '5', '6', '7', '8', '9', '10', '11', '12'];
+              const aIndex = order.indexOf(a.name);
+              const bIndex = order.indexOf(b.name);
+              if (aIndex !== bIndex) return aIndex - bIndex;
+              return a.section.localeCompare(b.section);
+            }).map((classItem) => {
+              const classAssignments = assignments.filter(a => 
+                a.className === classItem.name && a.section === classItem.section
+              );
+              const classTeacher = classAssignments.find(a => a.isClassTeacher);
+              
+              return (
+                <tr key={`${classItem.name}-${classItem.section}`} className="border-t hover:bg-gray-50">
+                  <td className="px-4 py-3">
+                    {classItem.name === 'Pre-Nursery' || classItem.name === 'Nursery' ? 
+                      classItem.name : `Class ${classItem.name}`}
+                  </td>
+                  <td className="px-4 py-3">{classItem.section}</td>
+                  <td className="px-4 py-3">{classTeacher?.teacher?.name || 'Not Assigned'}</td>
+                  <td className="px-4 py-3">{classAssignments.length}</td>
+                  <td className="px-4 py-3 text-center">
+                    <button
+                      onClick={() => {
+                        const classInfo = {
+                          className: classItem.name,
+                          section: classItem.section,
+                          count: classAssignments.length,
+                          classTeacher: classTeacher?.teacher?.name || null,
+                          teachers: classAssignments
+                        };
+                        setSelectedClass(classInfo);
+                        setClassTeachers(classAssignments);
+                      }}
+                      className="px-3 py-1 bg-blue-600 text-white rounded text-sm hover:bg-blue-700"
+                    >
+                      View
+                    </button>
+                  </td>
+                </tr>
+              );
+            })}
           </tbody>
         </table>
       </div>
+
+      {/* Teacher Dialog */}
+      {selectedClass && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
+          <div className="bg-white rounded-lg shadow-xl w-full max-w-2xl max-h-[80vh] overflow-y-auto">
+            <div className="flex justify-between items-center p-6 border-b">
+              <h3 className="text-xl font-semibold">
+                Teachers - Class {selectedClass.className} {selectedClass.section}
+              </h3>
+              <button
+                onClick={() => setSelectedClass(null)}
+                className="text-gray-400 hover:text-gray-600 text-2xl"
+              >
+                ×
+              </button>
+            </div>
+            <div className="p-6">
+              <div className="space-y-3">
+                {classTeachers.map((assignment) => (
+                  <div key={assignment.id} className="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
+                    <div className="flex-1">
+                      <div className="flex items-center gap-3">
+                        <span className="font-medium">{assignment.teacher?.name}</span>
+                        <span className="text-sm text-gray-600">({assignment.subject})</span>
+                        {assignment.isClassTeacher && (
+                          <span className="px-2 py-1 bg-blue-100 text-blue-800 rounded text-xs">
+                            Class Teacher
+                          </span>
+                        )}
+                      </div>
+                    </div>
+                    <button
+                      onClick={() => handleRemoveAssignment(assignment.id)}
+                      className="px-3 py-1 bg-red-600 text-white rounded text-sm hover:bg-red-700"
+                    >
+                      Remove
+                    </button>
+                  </div>
+                ))}
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 };

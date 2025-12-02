@@ -1,14 +1,17 @@
 import { useState, useEffect } from 'react';
 import axios from 'axios';
+import api from '../../../utils/api';
 
 const Dashboard = () => {
   const [stats, setStats] = useState({ students: 0, teachers: 0, classes: 0, attendance: {} });
   const [thoughtOfDay, setThoughtOfDay] = useState('Education is the most powerful weapon which you can use to change the world.');
   const [isEditingThought, setIsEditingThought] = useState(false);
   const [tempThought, setTempThought] = useState('');
+  const [upcomingEvents, setUpcomingEvents] = useState([]);
 
   useEffect(() => {
     fetchStats();
+    fetchUpcomingEvents();
   }, []);
 
   const fetchStats = async () => {
@@ -26,6 +29,20 @@ const Dashboard = () => {
       });
     } catch (error) {
       console.error('Failed to fetch stats:', error);
+    }
+  };
+
+  const fetchUpcomingEvents = async () => {
+    try {
+      const response = await api.get('/api/admin/events');
+      const now = new Date();
+      const upcoming = response.data
+        .filter(event => new Date(event.date) >= now)
+        .sort((a, b) => new Date(a.date) - new Date(b.date))
+        .slice(0, 3);
+      setUpcomingEvents(upcoming);
+    } catch (error) {
+      console.error('Failed to fetch events:', error);
     }
   };
 
@@ -137,6 +154,33 @@ const Dashboard = () => {
               <p className="text-gray-500 text-center">No thought added yet. Click Edit to add one.</p>
             )}
           </div>
+        )}
+      </div>
+
+      {/* Upcoming Events */}
+      <div className="bg-white rounded-lg shadow-sm border p-6">
+        <h3 className="text-lg font-semibold text-gray-900 mb-4">📅 Upcoming Events</h3>
+        {upcomingEvents.length > 0 ? (
+          <div className="space-y-3">
+            {upcomingEvents.map((event) => (
+              <div key={event.id} className="flex items-center justify-between p-3 bg-blue-50 rounded-lg border-l-4 border-blue-500">
+                <div>
+                  <h4 className="font-medium text-gray-800">{event.title}</h4>
+                  <p className="text-sm text-gray-600">{event.description}</p>
+                </div>
+                <div className="text-right">
+                  <p className="text-sm font-medium text-blue-600">
+                    {new Date(event.date).toLocaleDateString()}
+                  </p>
+                  <p className="text-xs text-gray-500">
+                    {new Date(event.date).toLocaleTimeString()}
+                  </p>
+                </div>
+              </div>
+            ))}
+          </div>
+        ) : (
+          <p className="text-gray-500 text-center py-4">No upcoming events scheduled.</p>
         )}
       </div>
     </div>
