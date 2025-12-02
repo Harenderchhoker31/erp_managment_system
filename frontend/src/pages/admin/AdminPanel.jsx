@@ -67,3 +67,4 @@ const AdminPanel = () => {
 };
 
 export default AdminPanel;
+/* completed */
