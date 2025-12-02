@@ -15,7 +15,7 @@ const Sidebar = ({ activeDialog, setActiveDialog }) => {
   ];
 
   return (
-    <div className="w-64 bg-white border-r h-screen flex flex-col">
+    <div className="w-64 bg-white border-r h-screen flex flex-col fixed left-0 top-0 z-10">
       <div className="p-4 bg-red-600 text-white">
         <h1 className="text-xl font-bold">EduMate</h1>
         <p className="text-sm">Admin Panel</p>

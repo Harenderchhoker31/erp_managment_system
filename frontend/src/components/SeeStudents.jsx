@@ -115,12 +115,9 @@ const SeeStudents = ({ onClose, onSuccess, inline = false }) => {
                     <th className="border border-gray-300 px-4 py-3 text-left text-sm font-semibold">Roll No</th>
                     <th className="border border-gray-300 px-4 py-3 text-left text-sm font-semibold">Class</th>
                     <th className="border border-gray-300 px-4 py-3 text-left text-sm font-semibold">Email</th>
-                    <th className="border border-gray-300 px-4 py-3 text-left text-sm font-semibold">DOB</th>
                     <th className="border border-gray-300 px-4 py-3 text-left text-sm font-semibold">Gender</th>
-                    <th className="border border-gray-300 px-4 py-3 text-left text-sm font-semibold">Blood</th>
-                    <th className="border border-gray-300 px-4 py-3 text-left text-sm font-semibold">Category</th>
-                    <th className="border border-gray-300 px-4 py-3 text-left text-sm font-semibold">Religion</th>
-                    <th className="border border-gray-300 px-4 py-3 text-left text-sm font-semibold">Transport</th>
+                    <th className="border border-gray-300 px-4 py-3 text-left text-sm font-semibold">Parent Name</th>
+                    <th className="border border-gray-300 px-4 py-3 text-left text-sm font-semibold">Parent Number</th>
                     <th className="border border-gray-300 px-4 py-3 text-center text-sm font-semibold">Actions</th>
                   </tr>
                 </thead>
@@ -131,12 +128,9 @@ const SeeStudents = ({ onClose, onSuccess, inline = false }) => {
                       <td className="border border-gray-300 px-4 py-3 text-sm font-medium">{student.rollNo}</td>
                       <td className="border border-gray-300 px-4 py-3 text-sm">{student.class}-{student.section}</td>
                       <td className="border border-gray-300 px-4 py-3 text-sm">{student.email}</td>
-                      <td className="border border-gray-300 px-4 py-3 text-sm">{new Date(student.dateOfBirth).toLocaleDateString()}</td>
                       <td className="border border-gray-300 px-4 py-3 text-sm">{student.gender}</td>
-                      <td className="border border-gray-300 px-4 py-3 text-sm">{student.bloodGroup || 'N/A'}</td>
-                      <td className="border border-gray-300 px-4 py-3 text-sm">{student.category || 'N/A'}</td>
-                      <td className="border border-gray-300 px-4 py-3 text-sm">{student.religion || 'N/A'}</td>
-                      <td className="border border-gray-300 px-4 py-3 text-sm">{student.transportMode || 'N/A'}</td>
+                      <td className="border border-gray-300 px-4 py-3 text-sm">{student.fatherName} / {student.motherName}</td>
+                      <td className="border border-gray-300 px-4 py-3 text-sm">{student.fatherPhone} / {student.motherPhone}</td>
                       
                       <td className="border border-gray-300 px-4 py-3 text-center">
                         <div className="flex justify-center gap-1">
