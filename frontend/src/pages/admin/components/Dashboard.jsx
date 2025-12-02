@@ -27,7 +27,7 @@ const Dashboard = () => {
   const fetchStats = async () => {
     try {
       const token = localStorage.getItem('token');
-      const response = await axios.get('http://localhost:3001/api/admin/stats', {
+      const response = await axios.get('https://erp-managment-system-xx77.vercel.app/api/admin/stats', {
         headers: { Authorization: `Bearer ${token}` }
       });
 

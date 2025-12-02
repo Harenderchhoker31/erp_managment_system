@@ -2,7 +2,7 @@ import { createContext, useContext, useState, useEffect } from 'react';
 import axios from 'axios';
 
 // Configure axios defaults
-axios.defaults.baseURL = 'http://localhost:3001';
+axios.defaults.baseURL = 'https://erp-managment-system-xx77.vercel.app/';
 axios.defaults.headers.common['Content-Type'] = 'application/json';
 
 const AuthContext = createContext();
