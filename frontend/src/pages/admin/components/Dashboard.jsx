@@ -8,10 +8,12 @@ const Dashboard = () => {
   const [isEditingThought, setIsEditingThought] = useState(false);
   const [tempThought, setTempThought] = useState('');
   const [upcomingEvents, setUpcomingEvents] = useState([]);
+  const [recentNotices, setRecentNotices] = useState([]);
 
   useEffect(() => {
     fetchStats();
     fetchUpcomingEvents();
+    fetchRecentNotices();
   }, []);
 
   const fetchStats = async () => {
@@ -43,6 +45,20 @@ const Dashboard = () => {
       setUpcomingEvents(upcoming);
     } catch (error) {
       console.error('Failed to fetch events:', error);
+      setUpcomingEvents([]);
+    }
+  };
+
+  const fetchRecentNotices = async () => {
+    try {
+      const response = await api.get('/api/admin/notices');
+      const recent = response.data
+        .sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt))
+        .slice(0, 3);
+      setRecentNotices(recent);
+    } catch (error) {
+      console.error('Failed to fetch notices:', error);
+      setRecentNotices([]);
     }
   };
 
@@ -68,7 +84,7 @@ const Dashboard = () => {
   return (
     <div className="space-y-6">
       {/* Stats Cards */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
         <div className="bg-white p-6 rounded-lg shadow-sm border">
           <div className="ml-4">
             <p className="text-sm font-medium text-gray-600">Total Students</p>
@@ -82,20 +98,6 @@ const Dashboard = () => {
             <p className="text-2xl font-bold text-gray-900">{stats.teachers}</p>
           </div>
         </div>
-
-        <div className="bg-white p-6 rounded-lg shadow-sm border">
-          <div className="flex items-center">
-            <div className="p-3 bg-yellow-100 rounded-full">
-              <span className="text-2xl">📚</span>
-            </div>
-            <div className="ml-4">
-              <p className="text-sm font-medium text-gray-600">Active Classes</p>
-              <p className="text-2xl font-bold text-gray-900">{stats.classes || 0}</p>
-            </div>
-          </div>
-        </div>
-
-
       </div>
 
       {/* Thought of the Day */}
@@ -157,31 +159,58 @@ const Dashboard = () => {
         )}
       </div>
 
-      {/* Upcoming Events */}
-      <div className="bg-white rounded-lg shadow-sm border p-6">
-        <h3 className="text-lg font-semibold text-gray-900 mb-4">📅 Upcoming Events</h3>
-        {upcomingEvents.length > 0 ? (
-          <div className="space-y-3">
-            {upcomingEvents.map((event) => (
-              <div key={event.id} className="flex items-center justify-between p-3 bg-blue-50 rounded-lg border-l-4 border-blue-500">
-                <div>
+      {/* Events and Notices */}
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        {/* Upcoming Events */}
+        <div className="bg-white rounded-lg shadow-sm border p-6">
+          <h3 className="text-lg font-semibold text-gray-900 mb-4">📅 Upcoming Events</h3>
+          {upcomingEvents.length > 0 ? (
+            <div className="space-y-3">
+              {upcomingEvents.map((event) => (
+                <div key={event.id} className="p-3 bg-blue-50 rounded-lg border-l-4 border-blue-500">
                   <h4 className="font-medium text-gray-800">{event.title}</h4>
-                  <p className="text-sm text-gray-600">{event.description}</p>
-                </div>
-                <div className="text-right">
-                  <p className="text-sm font-medium text-blue-600">
-                    {new Date(event.date).toLocaleDateString()}
-                  </p>
-                  <p className="text-xs text-gray-500">
-                    {new Date(event.date).toLocaleTimeString()}
+                  <p className="text-sm text-gray-600 mt-1">{event.description}</p>
+                  <p className="text-xs text-blue-600 mt-2">
+                    {new Date(event.date).toLocaleDateString()} at {new Date(event.date).toLocaleTimeString()}
                   </p>
                 </div>
-              </div>
-            ))}
-          </div>
-        ) : (
-          <p className="text-gray-500 text-center py-4">No upcoming events scheduled.</p>
-        )}
+              ))}
+            </div>
+          ) : (
+            <p className="text-gray-500 text-center py-4">No upcoming events scheduled.</p>
+          )}
+        </div>
+
+        {/* Recent Notices */}
+        <div className="bg-white rounded-lg shadow-sm border p-6">
+          <h3 className="text-lg font-semibold text-gray-900 mb-4">📝 Recent Notices</h3>
+          {recentNotices.length > 0 ? (
+            <div className="space-y-3">
+              {recentNotices.map((notice) => (
+                <div key={notice.id} className="p-3 bg-yellow-50 rounded-lg border-l-4 border-yellow-500">
+                  <div className="flex justify-between items-start mb-1">
+                    <h4 className="font-medium text-gray-800">{notice.title}</h4>
+                    <span className={`px-2 py-1 text-xs rounded ${
+                      notice.type === 'GENERAL' ? 'bg-gray-100 text-gray-800' :
+                      notice.type === 'ATTENDANCE' ? 'bg-yellow-100 text-yellow-800' :
+                      notice.type === 'MARKS' ? 'bg-green-100 text-green-800' :
+                      notice.type === 'EVENT' ? 'bg-blue-100 text-blue-800' :
+                      'bg-red-100 text-red-800'
+                    }`}>
+                      {notice.type}
+                    </span>
+                  </div>
+                  <p className="text-sm text-gray-600">{notice.message}</p>
+                  <p className="text-xs text-gray-500 mt-2">
+                    {new Date(notice.createdAt).toLocaleDateString()}
+                  </p>
+                </div>
+              ))}
+            </div>
+          ) : (
+            <p className="text-gray-500 text-center py-4">No recent notices.</p>
+          )}
+        </div>
       </div>
     </div>
   );

@@ -92,6 +92,7 @@ model Teacher {
   // Relations
   classes     Class[]
   teacherClasses TeacherClass[]
+  salaries    Salary[]
 }
 
 model TeacherClass {
@@ -170,6 +171,23 @@ model Notice {
   updatedAt DateTime @updatedAt
 }
 
+model Salary {
+  id        String   @id @default(auto()) @map("_id") @db.ObjectId
+  teacherId String   @db.ObjectId
+  amount    Float
+  month     String
+  year      String
+  status    SalaryStatus @default(PENDING)
+  paidDate  DateTime?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  // Relations
+  teacher Teacher @relation(fields: [teacherId], references: [id])
+
+  @@unique([teacherId, month, year])
+}
+
 model Assignment {
   id          String   @id @default(auto()) @map("_id") @db.ObjectId
   title       String
@@ -196,6 +214,9 @@ model Fee {
   paidDate    DateTime?
   status      FeeStatus @default(PENDING)
   description String
+  month       Int       @default(1)
+  year        Int       @default(2024)
+  paymentMethod String  @default("CASH")
   createdAt   DateTime  @default(now())
 
   // Relations
@@ -257,4 +278,10 @@ enum NotificationType {
   ASSIGNMENT
   FEE
   GENERAL
+}
+
+enum SalaryStatus {
+  PENDING
+  PAID
+  CANCELLED
 }

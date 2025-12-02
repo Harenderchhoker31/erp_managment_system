@@ -141,6 +141,30 @@ const ManageEventsNotices = ({ onSuccess }) => {
     }
   };
 
+  const handleDeleteEvent = async (eventId) => {
+    if (window.confirm('Are you sure you want to delete this event?')) {
+      try {
+        await api.delete(`/api/admin/events/${eventId}`);
+        onSuccess('Event deleted successfully');
+        fetchEvents();
+      } catch (error) {
+        console.error('Error deleting event:', error);
+      }
+    }
+  };
+
+  const handleDeleteNotice = async (noticeId) => {
+    if (window.confirm('Are you sure you want to delete this notice?')) {
+      try {
+        await api.delete(`/api/admin/notices/${noticeId}`);
+        onSuccess('Notice deleted successfully');
+        fetchNotices();
+      } catch (error) {
+        console.error('Error deleting notice:', error);
+      }
+    }
+  };
+
   return (
     <div className="space-y-6">
       <div className="flex justify-between items-center">
@@ -252,11 +276,21 @@ const ManageEventsNotices = ({ onSuccess }) => {
             <div className="space-y-4 max-h-96 overflow-y-auto">
               {events.map((event) => (
                 <div key={event.id} className="bg-white p-4 rounded-lg shadow border-l-4 border-blue-500">
-                  <h5 className="font-semibold text-gray-800">{event.title}</h5>
-                  <p className="text-gray-600 mt-1 text-sm">{event.description}</p>
-                  <p className="text-sm text-blue-600 mt-2 font-medium">
-                    {new Date(event.date).toLocaleDateString()} at {new Date(event.date).toLocaleTimeString()}
-                  </p>
+                  <div className="flex justify-between items-start">
+                    <div className="flex-1">
+                      <h5 className="font-semibold text-gray-800">{event.title}</h5>
+                      <p className="text-gray-600 mt-1 text-sm">{event.description}</p>
+                      <p className="text-sm text-blue-600 mt-2 font-medium">
+                        {new Date(event.date).toLocaleDateString()} at {new Date(event.date).toLocaleTimeString()}
+                      </p>
+                    </div>
+                    <button
+                      onClick={() => handleDeleteEvent(event.id)}
+                      className="ml-2 px-2 py-1 bg-red-600 text-white rounded text-xs hover:bg-red-700"
+                    >
+                      Delete
+                    </button>
+                  </div>
                 </div>
               ))}
             </div>
@@ -268,17 +302,25 @@ const ManageEventsNotices = ({ onSuccess }) => {
           <div className="grid gap-4">
             {notices.map((notice) => (
               <div key={notice.id} className="bg-white p-4 rounded-lg shadow">
-                <div className="flex justify-between items-start">
+                <div className="flex justify-between items-start mb-2">
                   <h5 className="font-semibold text-gray-800">{notice.title}</h5>
-                  <span className={`px-2 py-1 text-xs rounded ${
-                    notice.type === 'GENERAL' ? 'bg-gray-100 text-gray-800' :
-                    notice.type === 'ATTENDANCE' ? 'bg-yellow-100 text-yellow-800' :
-                    notice.type === 'MARKS' ? 'bg-green-100 text-green-800' :
-                    notice.type === 'EVENT' ? 'bg-blue-100 text-blue-800' :
-                    'bg-red-100 text-red-800'
-                  }`}>
-                    {notice.type}
-                  </span>
+                  <div className="flex items-center gap-2">
+                    <span className={`px-2 py-1 text-xs rounded ${
+                      notice.type === 'GENERAL' ? 'bg-gray-100 text-gray-800' :
+                      notice.type === 'ATTENDANCE' ? 'bg-yellow-100 text-yellow-800' :
+                      notice.type === 'MARKS' ? 'bg-green-100 text-green-800' :
+                      notice.type === 'EVENT' ? 'bg-blue-100 text-blue-800' :
+                      'bg-red-100 text-red-800'
+                    }`}>
+                      {notice.type}
+                    </span>
+                    <button
+                      onClick={() => handleDeleteNotice(notice.id)}
+                      className="px-2 py-1 bg-red-600 text-white rounded text-xs hover:bg-red-700"
+                    >
+                      Delete
+                    </button>
+                  </div>
                 </div>
                 <p className="text-gray-600 mt-2">{notice.message}</p>
                 <p className="text-xs text-gray-500 mt-3">

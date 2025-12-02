@@ -15,11 +15,13 @@ const ManageClasses = ({ onSuccess }) => {
   const [availableSections, setAvailableSections] = useState([]);
   const [selectedClass, setSelectedClass] = useState(null);
   const [classTeachers, setClassTeachers] = useState([]);
+  const [unpaidCounts, setUnpaidCounts] = useState({});
 
   useEffect(() => {
     fetchTeachers();
     fetchClasses();
     fetchAssignments();
+    fetchUnpaidCounts();
   }, []);
 
   const fetchTeachers = async () => {
@@ -46,6 +48,15 @@ const ManageClasses = ({ onSuccess }) => {
       setAssignments(response.data);
     } catch (error) {
       console.error('Failed to fetch assignments');
+    }
+  };
+
+  const fetchUnpaidCounts = async () => {
+    try {
+      const response = await api.get('/api/admin/unpaid-fees-count');
+      setUnpaidCounts(response.data);
+    } catch (error) {
+      console.error('Failed to fetch unpaid counts');
     }
   };
 
@@ -201,6 +212,7 @@ const ManageClasses = ({ onSuccess }) => {
               <th className="px-4 py-3 text-left text-sm font-semibold">Section</th>
               <th className="px-4 py-3 text-left text-sm font-semibold">Class Teacher</th>
               <th className="px-4 py-3 text-left text-sm font-semibold">Total Teachers</th>
+              <th className="px-4 py-3 text-left text-sm font-semibold">Unpaid Fees</th>
               <th className="px-4 py-3 text-center text-sm font-semibold">Action</th>
             </tr>
           </thead>
@@ -226,6 +238,11 @@ const ManageClasses = ({ onSuccess }) => {
                   <td className="px-4 py-3">{classItem.section}</td>
                   <td className="px-4 py-3">{classTeacher?.teacher?.name || 'Not Assigned'}</td>
                   <td className="px-4 py-3">{classAssignments.length}</td>
+                  <td className="px-4 py-3">
+                    <span className="px-2 py-1 text-xs font-medium bg-red-100 text-red-800 rounded">
+                      {unpaidCounts[`${classItem.name}-${classItem.section}`] || 0}
+                    </span>
+                  </td>
                   <td className="px-4 py-3 text-center">
                     <button
                       onClick={() => {
