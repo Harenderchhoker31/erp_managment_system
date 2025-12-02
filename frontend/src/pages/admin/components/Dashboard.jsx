@@ -9,11 +9,13 @@ const Dashboard = () => {
   const [tempThought, setTempThought] = useState('');
   const [upcomingEvents, setUpcomingEvents] = useState([]);
   const [recentNotices, setRecentNotices] = useState([]);
+  const [feeStats, setFeeStats] = useState({ paid: 0, unpaid: 0 });
 
   useEffect(() => {
     fetchStats();
     fetchUpcomingEvents();
     fetchRecentNotices();
+    fetchFeeStats();
   }, []);
 
   const fetchStats = async () => {
@@ -62,6 +64,32 @@ const Dashboard = () => {
     }
   };
 
+  const fetchFeeStats = async () => {
+    try {
+      const currentMonth = new Date().getMonth() + 1;
+      const currentYear = new Date().getFullYear();
+      
+      const [studentsRes, feesRes] = await Promise.all([
+        api.get('/api/admin/students'),
+        api.get('/api/admin/fees')
+      ]);
+      
+      const totalStudents = studentsRes.data.length;
+      const paidFees = feesRes.data.filter(f => 
+        f.month === currentMonth && 
+        f.year === currentYear && 
+        f.status === 'PAID'
+      ).length;
+      
+      setFeeStats({
+        paid: paidFees,
+        unpaid: totalStudents - paidFees
+      });
+    } catch (error) {
+      console.error('Failed to fetch fee stats:', error);
+    }
+  };
+
   const handleEditThought = () => {
     setTempThought(thoughtOfDay);
     setIsEditingThought(true);
@@ -84,7 +112,7 @@ const Dashboard = () => {
   return (
     <div className="space-y-6">
       {/* Stats Cards */}
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
         <div className="bg-white p-6 rounded-lg shadow-sm border">
           <div className="ml-4">
             <p className="text-sm font-medium text-gray-600">Total Students</p>
@@ -96,6 +124,22 @@ const Dashboard = () => {
           <div className="ml-4">
             <p className="text-sm font-medium text-gray-600">Total Teachers</p>
             <p className="text-2xl font-bold text-gray-900">{stats.teachers}</p>
+          </div>
+        </div>
+
+        <div className="bg-white p-6 rounded-lg shadow-sm border">
+          <div className="ml-4">
+            <p className="text-sm font-medium text-gray-600">Fee Status</p>
+            <div className="space-y-1">
+              <div className="flex justify-between">
+                <span className="text-sm text-green-600">Paid:</span>
+                <span className="text-sm font-semibold text-green-600">{feeStats.paid}</span>
+              </div>
+              <div className="flex justify-between">
+                <span className="text-sm text-red-600">Unpaid:</span>
+                <span className="text-sm font-semibold text-red-600">{feeStats.unpaid}</span>
+              </div>
+            </div>
           </div>
         </div>
       </div>
