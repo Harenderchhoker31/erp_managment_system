@@ -5,13 +5,13 @@ const Sidebar = ({ activeDialog, setActiveDialog }) => {
 
   const menuItems = [
     { id: 'dashboard', label: 'Dashboard'},
-    { id: 'students', label: 'Students'},
-    { id: 'teachers', label: 'Teachers'},
-    { id: 'view-classes', label: 'Classes' },
-    { id: 'assign', label: 'Assign'},
+    { id: 'students', label: 'Manage Students'},
+    { id: 'teachers', label: 'Manage Teachers'},
+    { id: 'view-classes', label: 'Manage Classes' },
+    { id: 'assign', label: 'Assign Class'},
     { id: 'events-notices', label: 'Events & Notice' },
-    { id: 'salary', label: 'Salary' },
-    { id: 'fees', label: 'Fees' },
+    { id: 'salary', label: 'Salary Management' },
+    { id: 'fees', label: 'Fees Management' },
   ];
 
   return (

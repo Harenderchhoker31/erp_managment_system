@@ -287,7 +287,10 @@ router.get('/stats', authenticateToken, authorizeRole(['ADMIN']), async (req, re
   try {
     const totalStudents = await prisma.student.count();
     const totalTeachers = await prisma.teacher.count();
-    const totalClasses = await prisma.teacherClass.count();
+    
+    // Get unique classes count
+    const allClasses = await prisma.class.findMany();
+    const totalClasses = allClasses.length;
 
     // Get recent attendance stats
     const today = new Date();
@@ -441,6 +444,265 @@ router.delete('/classes/:id', authenticateToken, authorizeRole(['ADMIN']), async
       where: { id }
     });
     res.json({ message: 'Class deleted successfully' });
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+});
+
+// Delete Teacher Class Assignment
+router.delete('/teacher-classes/:id', authenticateToken, authorizeRole(['ADMIN']), async (req, res) => {
+  try {
+    const { id } = req.params;
+    await prisma.teacherClass.delete({
+      where: { id }
+    });
+    res.json({ message: 'Teacher assignment removed successfully' });
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+});
+
+// Events Routes
+router.post('/events', authenticateToken, authorizeRole(['ADMIN']), async (req, res) => {
+  try {
+    const { title, description, date } = req.body;
+    const event = await prisma.event.create({
+      data: {
+        title,
+        description,
+        date: new Date(date),
+        createdBy: req.user.id
+      }
+    });
+    res.status(201).json({ message: 'Event created successfully', event });
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+});
+
+router.get('/events', authenticateToken, authorizeRole(['ADMIN']), async (req, res) => {
+  try {
+    const events = await prisma.event.findMany({
+      orderBy: { date: 'asc' }
+    });
+    res.json(events);
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+});
+
+router.delete('/events/:id', authenticateToken, authorizeRole(['ADMIN']), async (req, res) => {
+  try {
+    const { id } = req.params;
+    await prisma.event.delete({
+      where: { id }
+    });
+    res.json({ message: 'Event deleted successfully' });
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+});
+
+// Notices Routes
+router.post('/notices', authenticateToken, authorizeRole(['ADMIN']), async (req, res) => {
+  try {
+    const { title, message, type } = req.body;
+    const notice = await prisma.notice.create({
+      data: {
+        title,
+        message,
+        type: type || 'GENERAL'
+      }
+    });
+    res.status(201).json({ message: 'Notice created successfully', notice });
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+});
+
+router.get('/notices', authenticateToken, authorizeRole(['ADMIN']), async (req, res) => {
+  try {
+    const notices = await prisma.notice.findMany({
+      orderBy: { createdAt: 'desc' }
+    });
+    res.json(notices);
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+});
+
+router.delete('/notices/:id', authenticateToken, authorizeRole(['ADMIN']), async (req, res) => {
+  try {
+    const { id } = req.params;
+    await prisma.notice.delete({
+      where: { id }
+    });
+    res.json({ message: 'Notice deleted successfully' });
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+});
+
+// Salary Routes
+router.post('/salary', authenticateToken, authorizeRole(['ADMIN']), async (req, res) => {
+  try {
+    const { teacherId, amount, month, year } = req.body;
+    const salary = await prisma.salary.create({
+      data: {
+        teacherId,
+        amount: parseFloat(amount),
+        month,
+        year
+      }
+    });
+    res.status(201).json({ message: 'Salary record created successfully', salary });
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+});
+
+router.get('/salaries', authenticateToken, authorizeRole(['ADMIN']), async (req, res) => {
+  try {
+    const salaries = await prisma.salary.findMany({
+      include: {
+        teacher: {
+          select: { name: true, employeeId: true }
+        }
+      },
+      orderBy: { createdAt: 'desc' }
+    });
+    res.json(salaries);
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+});
+
+router.get('/salaries/teacher/:teacherId', authenticateToken, authorizeRole(['ADMIN']), async (req, res) => {
+  try {
+    const { teacherId } = req.params;
+    const salaries = await prisma.salary.findMany({
+      where: { teacherId },
+      orderBy: { createdAt: 'desc' }
+    });
+    res.json(salaries);
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+});
+
+router.put('/salary/:id', authenticateToken, authorizeRole(['ADMIN']), async (req, res) => {
+  try {
+    const { id } = req.params;
+    const { status, paidDate } = req.body;
+    const salary = await prisma.salary.update({
+      where: { id },
+      data: {
+        status,
+        paidDate: paidDate ? new Date(paidDate) : null
+      }
+    });
+    res.json({ message: 'Salary updated successfully', salary });
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+});
+
+router.delete('/salary/:id', authenticateToken, authorizeRole(['ADMIN']), async (req, res) => {
+  try {
+    const { id } = req.params;
+    await prisma.salary.delete({
+      where: { id }
+    });
+    res.json({ message: 'Salary record deleted successfully' });
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+});
+
+// Fee Routes
+router.post('/fees', authenticateToken, authorizeRole(['ADMIN']), async (req, res) => {
+  try {
+    const { studentId, amount, dueDate, description, month, year, paymentMethod } = req.body;
+    const fee = await prisma.fee.create({
+      data: {
+        studentId,
+        amount: parseFloat(amount),
+        dueDate: new Date(dueDate),
+        description: description || 'Monthly Fee',
+        month: month || new Date().getMonth() + 1,
+        year: year || new Date().getFullYear(),
+        paymentMethod
+      }
+    });
+    res.status(201).json({ message: 'Fee record created successfully', fee });
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+});
+
+router.get('/fees', authenticateToken, authorizeRole(['ADMIN']), async (req, res) => {
+  try {
+    const fees = await prisma.fee.findMany({
+      include: {
+        student: {
+          select: { name: true, rollNo: true, fatherPhone: true, motherPhone: true }
+        }
+      },
+      orderBy: { createdAt: 'desc' }
+    });
+    res.json(fees);
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+});
+
+router.put('/fees/:id', authenticateToken, authorizeRole(['ADMIN']), async (req, res) => {
+  try {
+    const { id } = req.params;
+    const { status, paidDate, paymentMethod } = req.body;
+    const fee = await prisma.fee.update({
+      where: { id },
+      data: {
+        status,
+        paidDate: paidDate ? new Date(paidDate) : null,
+        paymentMethod
+      }
+    });
+    res.json({ message: 'Fee updated successfully', fee });
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+});
+
+router.get('/unpaid-fees-count', authenticateToken, authorizeRole(['ADMIN']), async (req, res) => {
+  try {
+    const currentMonth = new Date().getMonth() + 1;
+    const currentYear = new Date().getFullYear();
+    
+    const students = await prisma.student.findMany({
+      select: { id: true, class: true, section: true }
+    });
+    
+    const paidFees = await prisma.fee.findMany({
+      where: {
+        month: currentMonth,
+        year: currentYear,
+        status: 'PAID'
+      },
+      select: { studentId: true }
+    });
+    
+    const paidStudentIds = new Set(paidFees.map(f => f.studentId));
+    
+    const unpaidCounts = students.reduce((acc, student) => {
+      if (!paidStudentIds.has(student.id)) {
+        const key = `${student.class}-${student.section}`;
+        acc[key] = (acc[key] || 0) + 1;
+      }
+      return acc;
+    }, {});
+    
+    res.json(unpaidCounts);
   } catch (error) {
     res.status(500).json({ error: error.message });
   }
