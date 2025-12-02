@@ -1,10 +1,9 @@
 import express from 'express';
 import bcrypt from 'bcryptjs';
 import jwt from 'jsonwebtoken';
-import { PrismaClient } from '@prisma/client';
+import prisma, { connectWithRetry } from '../lib/db.js';
 
 const router = express.Router();
-const prisma = new PrismaClient();
 
 // Register
 router.post('/signup', async (req, res) => {
@@ -12,9 +11,9 @@ router.post('/signup', async (req, res) => {
     console.log('Signup request received:', req.body);
     const { email, password, name, role, phone } = req.body;
 
-    const existingUser = await prisma.user.findUnique({
-      where: { email }
-    });
+    const existingUser = await connectWithRetry(() => 
+      prisma.user.findUnique({ where: { email } })
+    );
 
     if (existingUser) {
       return res.status(400).json({ error: 'User already exists' });
@@ -22,15 +21,11 @@ router.post('/signup', async (req, res) => {
 
     const hashedPassword = await bcrypt.hash(password, 10);
 
-    const user = await prisma.user.create({
-      data: {
-        email,
-        password: hashedPassword,
-        name,
-        role,
-        phone
-      }
-    });
+    const user = await connectWithRetry(() => 
+      prisma.user.create({
+        data: { email, password: hashedPassword, name, role, phone }
+      })
+    );
 
     const token = jwt.sign(
       { userId: user.id, role: user.role },
@@ -55,18 +50,18 @@ router.post('/login', async (req, res) => {
     const { email, password } = req.body;
 
     // Check User table first
-    let user = await prisma.user.findUnique({
-      where: { email }
-    });
+    let user = await connectWithRetry(() => 
+      prisma.user.findUnique({ where: { email } })
+    );
 
     let userType = 'USER';
     let userRole = user?.role;
 
     // If not found in User table, check Student table
     if (!user) {
-      const student = await prisma.student.findUnique({
-        where: { email }
-      });
+      const student = await connectWithRetry(() => 
+        prisma.student.findUnique({ where: { email } })
+      );
       if (student) {
         user = student;
         userType = 'STUDENT';
@@ -76,9 +71,9 @@ router.post('/login', async (req, res) => {
 
     // If not found in Student table, check Teacher table
     if (!user) {
-      const teacher = await prisma.teacher.findUnique({
-        where: { email }
-      });
+      const teacher = await connectWithRetry(() => 
+        prisma.teacher.findUnique({ where: { email } })
+      );
       if (teacher) {
         user = teacher;
         userType = 'TEACHER';
