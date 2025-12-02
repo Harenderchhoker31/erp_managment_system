@@ -36,10 +36,6 @@ model Student {
   gender      String
   address     String
   phone       String
-  parentName  String
-  parentPhone String
-  parentEmail String
-  admissionDate DateTime @default(now())
   bloodGroup  String
   nationality String
   religion    String

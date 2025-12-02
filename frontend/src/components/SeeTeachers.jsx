@@ -3,6 +3,7 @@ import api from '../utils/api';
 import AddTeacher from './AddTeacher';
 import EditTeacher from './EditTeacher';
 
+
 const SeeTeachers = ({ onClose, onSuccess, inline = false }) => {
   const [teachers, setTeachers] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -10,6 +11,7 @@ const SeeTeachers = ({ onClose, onSuccess, inline = false }) => {
   const [editingTeacher, setEditingTeacher] = useState(null);
   const [detailTeacher, setDetailTeacher] = useState(null);
   const [deleteTeacher, setDeleteTeacher] = useState(null);
+
 
   useEffect(() => {
     fetchTeachers();

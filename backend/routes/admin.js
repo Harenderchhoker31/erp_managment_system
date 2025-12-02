@@ -11,7 +11,9 @@ router.post('/students', authenticateToken, authorizeRole(['ADMIN']), async (req
   try {
     const {
       email, password, name, rollNo, class: className, section,
-      dateOfBirth, gender, address, phone, parentName, parentPhone, parentEmail, bloodGroup
+      dateOfBirth, gender, address, phone, bloodGroup,
+      nationality, religion, category, previousSchool, transportMode, fatherName, motherName,
+      fatherPhone, fatherEmail, motherPhone, motherEmail, emergencyContact, medicalConditions
     } = req.body;
 
     const hashedPassword = await bcrypt.hash(password, 10);
@@ -28,10 +30,20 @@ router.post('/students', authenticateToken, authorizeRole(['ADMIN']), async (req
         gender,
         address,
         phone,
-        parentName,
-        parentPhone,
-        parentEmail,
-        bloodGroup
+        bloodGroup,
+        nationality,
+        religion,
+        category,
+        previousSchool,
+        transportMode,
+        fatherName,
+        motherName,
+        fatherPhone,
+        fatherEmail,
+        motherPhone,
+        motherEmail,
+        emergencyContact,
+        medicalConditions
       }
     });
 
@@ -171,7 +183,9 @@ router.put('/students/:id', authenticateToken, authorizeRole(['ADMIN']), async (
     const { id } = req.params;
     const {
       email, name, rollNo, class: className, section,
-      dateOfBirth, gender, address, phone, parentName, parentPhone, parentEmail, bloodGroup
+      dateOfBirth, gender, address, phone, bloodGroup,
+      nationality, religion, category, previousSchool, transportMode, fatherName, motherName,
+      fatherPhone, fatherEmail, motherPhone, motherEmail, emergencyContact, medicalConditions
     } = req.body;
 
     const student = await prisma.student.update({
@@ -186,10 +200,20 @@ router.put('/students/:id', authenticateToken, authorizeRole(['ADMIN']), async (
         gender,
         address,
         phone,
-        parentName,
-        parentPhone,
-        parentEmail,
-        bloodGroup
+        bloodGroup,
+        nationality,
+        religion,
+        category,
+        previousSchool,
+        transportMode,
+        fatherName,
+        motherName,
+        fatherPhone,
+        fatherEmail,
+        motherPhone,
+        motherEmail,
+        emergencyContact,
+        medicalConditions
       }
     });
 
