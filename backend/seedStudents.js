@@ -11,22 +11,25 @@ const bloodGroups = ['A+', 'A-', 'B+', 'B-', 'AB+', 'AB-', 'O+', 'O-'];
 const categories = ['General', 'OBC', 'SC', 'ST', 'EWS'];
 const religions = ['Hindu', 'Muslim', 'Christian', 'Sikh', 'Buddhist', 'Jain'];
 
-const classes = [
-  { name: 'Pre-Nursery', sections: ['A', 'B'] },
-  { name: 'Nursery', sections: ['A', 'B', 'C'] },
-  { name: '1', sections: ['A', 'B', 'C'] },
-  { name: '2', sections: ['A', 'B', 'C'] },
-  { name: '3', sections: ['A', 'B', 'C'] },
-  { name: '4', sections: ['A', 'B', 'C'] },
-  { name: '5', sections: ['A', 'B', 'C'] },
-  { name: '6', sections: ['A', 'B', 'C'] },
-  { name: '7', sections: ['A', 'B', 'C'] },
-  { name: '8', sections: ['A', 'B', 'C'] },
-  { name: '9', sections: ['A', 'B', 'C'] },
-  { name: '10', sections: ['A', 'B', 'C'] },
-  { name: '11', sections: ['Arts-A', 'Arts-B', 'Non-Medical-A', 'Medical-A', 'Commerce-A'] },
-  { name: '12', sections: ['Arts-A', 'Arts-B', 'Non-Medical-A', 'Medical-A', 'Commerce-A'] }
-];
+// Get existing classes from database
+async function getExistingClasses() {
+  const classes = await prisma.class.findMany({
+    select: { name: true, section: true }
+  });
+  
+  // Group by class name
+  const classMap = {};
+  classes.forEach(cls => {
+    if (!classMap[cls.name]) {
+      classMap[cls.name] = [];
+    }
+    if (!classMap[cls.name].includes(cls.section)) {
+      classMap[cls.name].push(cls.section);
+    }
+  });
+  
+  return Object.entries(classMap).map(([name, sections]) => ({ name, sections }));
+}
 
 function getRandomItem(array) {
   return array[Math.floor(Math.random() * array.length)];
@@ -74,27 +77,55 @@ async function seedStudents() {
   try {
     console.log('Starting to seed students...');
     
-    for (const classInfo of classes) {
+    // Get existing classes from database
+    const existingClasses = await getExistingClasses();
+    console.log('Found existing classes:', existingClasses);
+    
+    for (const classInfo of existingClasses) {
       for (const section of classInfo.sections) {
         console.log(`Creating students for Class ${classInfo.name} - Section ${section}`);
         
-        // Create class first
-        try {
-          await prisma.class.create({
-            data: {
-              name: classInfo.name,
-              section: section
-            }
-          });
-        } catch (error) {
-          // Class might already exist, continue
+        // Check current student count in this class-section
+        const existingCount = await prisma.student.count({
+          where: {
+            class: classInfo.name,
+            section: section
+          }
+        });
+        
+        const studentsToAdd = Math.max(0, 50 - existingCount);
+        
+        if (studentsToAdd === 0) {
+          console.log(`Class ${classInfo.name}-${section} already has 50+ students, skipping...`);
+          continue;
         }
         
-        for (let i = 1; i <= 50; i++) {
+        console.log(`Adding ${studentsToAdd} students to Class ${classInfo.name}-${section} (current: ${existingCount})`);
+        
+        // Get the highest roll number for this class-section
+        const lastStudent = await prisma.student.findFirst({
+          where: {
+            class: classInfo.name,
+            section: section
+          },
+          orderBy: {
+            rollNo: 'desc'
+          }
+        });
+        
+        let startRollNumber = 1;
+        if (lastStudent) {
+          const lastRollMatch = lastStudent.rollNo.match(/\d+$/);
+          if (lastRollMatch) {
+            startRollNumber = parseInt(lastRollMatch[0]) + 1;
+          }
+        }
+        
+        for (let i = 0; i < studentsToAdd; i++) {
           const firstName = getRandomItem(firstNames);
           const lastName = getRandomItem(lastNames);
           const fullName = `${firstName} ${lastName}`;
-          const rollNo = `${classInfo.name}${section}${i.toString().padStart(3, '0')}`;
+          const rollNo = `${classInfo.name}${section}${(startRollNumber + i).toString().padStart(3, '0')}`;
           
           const fatherName = `${getRandomItem(firstNames)} ${lastName}`;
           const motherName = `${getRandomItem(firstNames.filter(n => ['Prisha', 'Ananya', 'Fatima', 'Aanya', 'Diya', 'Pihu', 'Saanvi', 'Arya', 'Sara', 'Myra', 'Anika', 'Navya', 'Kavya', 'Avni', 'Aadhya', 'Shanaya', 'Akshara', 'Vanya', 'Kiara', 'Riya'].includes(n)))} ${lastName}`;
@@ -119,7 +150,7 @@ async function seedStudents() {
             nationality: 'Indian',
             religion: getRandomItem(religions),
             category: getRandomItem(categories),
-            previousSchool: i > 25 ? `${getRandomItem(['St. Mary', 'DAV', 'DPS', 'Kendriya Vidyalaya', 'Modern School'])} School` : null,
+            previousSchool: (startRollNumber + i) > 25 ? `${getRandomItem(['St. Mary', 'DAV', 'DPS', 'Kendriya Vidyalaya', 'Modern School'])} School` : 'Not Applicable',
             transportMode: getRandomItem(['School Bus', 'Private Vehicle', 'Walking', 'Public Transport']),
             fatherName: fatherName,
             motherName: motherName,
@@ -128,7 +159,7 @@ async function seedStudents() {
             motherPhone: generatePhone(),
             motherEmail: generateParentEmail(motherName),
             emergencyContact: generatePhone(),
-            medicalConditions: i % 10 === 0 ? getRandomItem(['Asthma', 'Allergies', 'None']) : null,
+            medicalConditions: (startRollNumber + i) % 10 === 0 ? getRandomItem(['Asthma', 'Allergies']) : 'None',
             admissionDate: new Date(2024, 3, Math.floor(Math.random() * 30) + 1)
           };
           
@@ -139,7 +170,15 @@ async function seedStudents() {
           }
         }
         
-        console.log(`✓ Created 50 students for Class ${classInfo.name} - Section ${section}`);
+        console.log(`✓ Added ${studentsToAdd} students to Class ${classInfo.name} - Section ${section}`);
+        
+        const finalCount = await prisma.student.count({
+          where: {
+            class: classInfo.name,
+            section: section
+          }
+        });
+        console.log(`  Total students now: ${finalCount}`);
       }
     }
     

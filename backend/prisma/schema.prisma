@@ -35,12 +35,25 @@ model Student {
   dateOfBirth DateTime
   gender      String
   address     String
-  phone       String?
+  phone       String
   parentName  String
   parentPhone String
   parentEmail String
   admissionDate DateTime @default(now())
-  bloodGroup  String?
+  bloodGroup  String
+  nationality String
+  religion    String
+  category    String
+  previousSchool String
+  transportMode String
+  fatherName  String
+  motherName  String
+  fatherPhone String
+  fatherEmail String
+  motherPhone String
+  motherEmail String
+  emergencyContact String
+  medicalConditions String
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
 
@@ -64,18 +77,18 @@ model Teacher {
   gender      String
   address     String
   phone       String
-  alternatePhone String?
-  emergencyContact String?
-  nationality String?
-  religion    String?
-  category    String?
-  maritalStatus String?
-  bloodGroup  String?
-  aadharNumber String?
-  panNumber   String?
-  bankAccount String?
-  ifscCode    String?
-  salary      Float?
+  alternatePhone String
+  emergencyContact String
+  nationality String
+  religion    String
+  category    String
+  maritalStatus String
+  bloodGroup  String
+  aadharNumber String
+  panNumber   String
+  bankAccount String
+  ifscCode    String
+  salary      Float
   joiningDate DateTime @default(now())
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
