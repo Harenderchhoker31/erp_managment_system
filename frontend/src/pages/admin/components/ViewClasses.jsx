@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import api from '../../../utils/api';
+import ClassDetails from './ClassDetails';
 
 const ViewClasses = () => {
   const [classes, setClasses] = useState([]);
@@ -7,8 +8,7 @@ const ViewClasses = () => {
   const [showAddForm, setShowAddForm] = useState(false);
   const [formData, setFormData] = useState({ name: '', section: '' });
   const [deleteClass, setDeleteClass] = useState(null);
-  const [detailClass, setDetailClass] = useState(null);
-  const [classStudents, setClassStudents] = useState([]);
+  const [selectedClass, setSelectedClass] = useState(null);
   const [message, setMessage] = useState('');
   const [error, setError] = useState('');
 
@@ -67,15 +67,18 @@ const ViewClasses = () => {
     }
   };
 
-  const handleViewDetails = async (cls) => {
-    try {
-      const response = await api.get(`/api/admin/students/class/${cls.name}/${cls.section}`);
-      setClassStudents(response.data);
-      setDetailClass(cls);
-    } catch (error) {
-      console.error('Failed to fetch class students');
-    }
+  const handleViewDetails = (cls) => {
+    setSelectedClass(cls);
   };
+
+  if (selectedClass) {
+    return (
+      <ClassDetails 
+        classData={selectedClass} 
+        onBack={() => setSelectedClass(null)} 
+      />
+    );
+  }
 
   return (
     <div className="space-y-6">
@@ -259,59 +262,7 @@ const ViewClasses = () => {
         </div>
       )}
 
-      {detailClass && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
-          <div className="bg-white rounded-lg shadow-xl w-full max-w-4xl max-h-[90vh] overflow-y-auto">
-            <div className="p-4 border-b">
-              <h3 className="text-lg font-semibold">
-                {detailClass.name === 'Pre-Nursery' || detailClass.name === 'Nursery' 
-                  ? detailClass.name 
-                  : `Class ${detailClass.name}`} - {detailClass.section.includes('-') ? detailClass.section : `Section ${detailClass.section}`}
-              </h3>
-            </div>
-            <div className="p-4">
-              <div className="mb-4">
-                <p><span className="font-medium">Total Students:</span> {classStudents.length}</p>
-                <p><span className="font-medium">Class Teacher:</span> {detailClass.classTeacher ? detailClass.classTeacher.name : 'Not Assigned'}</p>
-              </div>
-              
-              <h4 className="font-semibold mb-3">Students List:</h4>
-              <div className="overflow-x-auto">
-                <table className="w-full border-collapse border">
-                  <thead>
-                    <tr className="bg-gray-50">
-                      <th className="border px-3 py-2 text-left">Roll No</th>
-                      <th className="border px-3 py-2 text-left">Name</th>
-                      <th className="border px-3 py-2 text-left">Email</th>
-                      <th className="border px-3 py-2 text-left">Parent</th>
-                      <th className="border px-3 py-2 text-left">Phone</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {classStudents.map((student) => (
-                      <tr key={student.id}>
-                        <td className="border px-3 py-2">{student.rollNo}</td>
-                        <td className="border px-3 py-2">{student.name}</td>
-                        <td className="border px-3 py-2">{student.email}</td>
-                        <td className="border px-3 py-2">{student.parentName}</td>
-                        <td className="border px-3 py-2">{student.parentPhone}</td>
-                      </tr>
-                    ))}
-                  </tbody>
-                </table>
-              </div>
-            </div>
-            <div className="p-4 border-t">
-              <button
-                onClick={() => setDetailClass(null)}
-                className="px-4 py-2 bg-gray-600 text-white rounded hover:bg-gray-700"
-              >
-                Close
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
+
     </div>
   );
 };

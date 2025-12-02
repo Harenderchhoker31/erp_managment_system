@@ -15,10 +15,10 @@ const AddTeacher = ({ onClose, onSuccess }) => {
     address: '',
     phone: '',
     salary: '',
-    joiningDate: '',
+    joiningDate: new Date().toISOString().split('T')[0],
     alternatePhone: '',
     emergencyContact: '',
-    nationality: '',
+    nationality: 'Indian',
     religion: '',
     category: '',
     maritalStatus: '',
@@ -71,7 +71,7 @@ const AddTeacher = ({ onClose, onSuccess }) => {
               <label className="block text-sm font-medium text-gray-700 mb-1">Email</label>
               <input
                 type="email"
-                placeholder="Email"
+                placeholder="Email (@teacher.edu)"
                 value={formData.email}
                 onChange={(e) => setFormData({ ...formData, email: e.target.value })}
                 className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-transparent"
@@ -113,25 +113,52 @@ const AddTeacher = ({ onClose, onSuccess }) => {
             </div>
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-1">Subject</label>
-              <input
-                type="text"
-                placeholder="Subject"
+              <select
                 value={formData.subject}
-                onChange={(e) => setFormData({ ...formData, subject: e.target.value.charAt(0).toUpperCase() + e.target.value.slice(1) })}
+                onChange={(e) => setFormData({ ...formData, subject: e.target.value })}
                 className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-transparent"
                 required
-              />
+              >
+                <option value="">Select Subject</option>
+                <option value="Mathematics">Mathematics</option>
+                <option value="Physics">Physics</option>
+                <option value="Chemistry">Chemistry</option>
+                <option value="Biology">Biology</option>
+                <option value="English">English</option>
+                <option value="Hindi">Hindi</option>
+                <option value="History">History</option>
+                <option value="Geography">Geography</option>
+                <option value="Economics">Economics</option>
+                <option value="Political Science">Political Science</option>
+                <option value="Computer Science">Computer Science</option>
+                <option value="Physical Education">Physical Education</option>
+                <option value="Art">Art</option>
+                <option value="Music">Music</option>
+              </select>
             </div>
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-1">Qualification</label>
-              <input
-                type="text"
-                placeholder="Qualification"
+              <select
                 value={formData.qualification}
-                onChange={(e) => setFormData({ ...formData, qualification: e.target.value.charAt(0).toUpperCase() + e.target.value.slice(1) })}
+                onChange={(e) => setFormData({ ...formData, qualification: e.target.value })}
                 className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-transparent"
                 required
-              />
+              >
+                <option value="">Select Qualification</option>
+                <option value="B.Ed">B.Ed</option>
+                <option value="M.Ed">M.Ed</option>
+                <option value="B.A">B.A</option>
+                <option value="M.A">M.A</option>
+                <option value="B.Sc">B.Sc</option>
+                <option value="M.Sc">M.Sc</option>
+                <option value="B.Com">B.Com</option>
+                <option value="M.Com">M.Com</option>
+                <option value="BCA">BCA</option>
+                <option value="MCA">MCA</option>
+                <option value="B.Tech">B.Tech</option>
+                <option value="M.Tech">M.Tech</option>
+                <option value="PhD">PhD</option>
+              </select>
             </div>
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-1">Experience (years)</label>
@@ -240,21 +267,28 @@ const AddTeacher = ({ onClose, onSuccess }) => {
               <label className="block text-sm font-medium text-gray-700 mb-1">Nationality</label>
               <input
                 type="text"
-                placeholder="Nationality"
                 value={formData.nationality}
                 onChange={(e) => setFormData({ ...formData, nationality: e.target.value })}
                 className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-transparent"
+                required
               />
             </div>
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-1">Religion</label>
-              <input
-                type="text"
-                placeholder="Religion"
+              <select
                 value={formData.religion}
                 onChange={(e) => setFormData({ ...formData, religion: e.target.value })}
                 className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-transparent"
-              />
+                required
+              >
+                <option value="">Select Religion</option>
+                <option value="Hindu">Hindu</option>
+                <option value="Muslim">Muslim</option>
+                <option value="Christian">Christian</option>
+                <option value="Sikh">Sikh</option>
+                <option value="Buddhist">Buddhist</option>
+                <option value="Jain">Jain</option>
+              </select>
             </div>
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-1">Category</label>

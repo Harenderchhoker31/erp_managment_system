@@ -58,7 +58,9 @@ router.post('/teachers', authenticateToken, authorizeRole(['ADMIN']), async (req
   try {
     const {
       email, password, name, employeeId, subject, qualification, experience,
-      dateOfBirth, gender, address, phone, salary, joiningDate
+      dateOfBirth, gender, address, phone, salary, joiningDate, alternatePhone,
+      emergencyContact, nationality, religion, category, maritalStatus, bloodGroup,
+      aadharNumber, panNumber, bankAccount, ifscCode
     } = req.body;
 
     const hashedPassword = await bcrypt.hash(password, 10);
@@ -76,7 +78,18 @@ router.post('/teachers', authenticateToken, authorizeRole(['ADMIN']), async (req
         gender,
         address,
         phone,
-        salary: salary ? parseFloat(salary) : null,
+        alternatePhone: alternatePhone || '',
+        emergencyContact: emergencyContact || '',
+        nationality: nationality || 'Indian',
+        religion: religion || 'Hindu',
+        category: category || 'General',
+        maritalStatus: maritalStatus || 'Single',
+        bloodGroup: bloodGroup || 'O+',
+        aadharNumber: aadharNumber || '',
+        panNumber: panNumber || '',
+        bankAccount: bankAccount || '',
+        ifscCode: ifscCode || '',
+        salary: salary ? parseFloat(salary) : 0,
         joiningDate: joiningDate ? new Date(joiningDate) : new Date()
       }
     });
@@ -229,7 +242,9 @@ router.put('/teachers/:id', authenticateToken, authorizeRole(['ADMIN']), async (
     const { id } = req.params;
     const {
       email, name, employeeId, subject, qualification, experience,
-      dateOfBirth, gender, address, phone, salary, joiningDate
+      dateOfBirth, gender, address, phone, salary, joiningDate, alternatePhone,
+      emergencyContact, nationality, religion, category, maritalStatus, bloodGroup,
+      aadharNumber, panNumber, bankAccount, ifscCode
     } = req.body;
 
     const teacher = await prisma.teacher.update({
@@ -245,6 +260,17 @@ router.put('/teachers/:id', authenticateToken, authorizeRole(['ADMIN']), async (
         gender,
         address,
         phone,
+        alternatePhone,
+        emergencyContact,
+        nationality,
+        religion,
+        category,
+        maritalStatus,
+        bloodGroup,
+        aadharNumber,
+        panNumber,
+        bankAccount,
+        ifscCode,
         salary: salary ? parseFloat(salary) : undefined,
         joiningDate: joiningDate ? new Date(joiningDate) : undefined
       }
