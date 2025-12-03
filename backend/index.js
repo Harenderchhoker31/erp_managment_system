@@ -146,20 +146,9 @@ app.use((req, res) => {
 app.listen(PORT, async () => {
   console.log(`Server running on port ${PORT}`);
   
-  // Test database connection
   try {
     await prisma.$connect();
     console.log('✅ Database connected successfully');
-    
-    // Test a simple query
-    const userCount = await prisma.user.count();
-    const studentCount = await prisma.student.count();
-    const teacherCount = await prisma.teacher.count();
-    
-    console.log(`📊 Database stats:`);
-    console.log(`   Users: ${userCount}`);
-    console.log(`   Students: ${studentCount}`);
-    console.log(`   Teachers: ${teacherCount}`);
   } catch (error) {
     console.error('❌ Database connection failed:', error.message);
   }

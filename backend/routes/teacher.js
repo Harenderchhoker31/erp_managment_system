@@ -151,8 +151,7 @@ router.post('/events', authenticateToken, authorizeRole(['TEACHER']), async (req
       data: {
         title,
         description,
-        date: new Date(date),
-        createdBy: req.user.id
+        date: new Date(date)
       }
     });
 

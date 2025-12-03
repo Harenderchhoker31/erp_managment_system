@@ -14,25 +14,32 @@ const TeacherDashboard = () => {
 
     const fetchDashboardData = async () => {
         try {
-            const [classesRes, eventsRes, noticesRes] = await Promise.all([
-                teacherAPI.getClasses(),
-                api.get('/api/admin/events'),
-                api.get('/api/admin/notices')
-            ]);
-
-            setClasses(classesRes.data);
+            const classesRes = await teacherAPI.getClasses();
+            setClasses(classesRes.data || []);
             
-            const now = new Date();
-            const upcoming = eventsRes.data
-                .filter(event => new Date(event.date) >= now)
-                .sort((a, b) => new Date(a.date) - new Date(b.date))
-                .slice(0, 3);
-            setUpcomingEvents(upcoming);
+            try {
+                const eventsRes = await api.get('/api/admin/events');
+                const now = new Date();
+                const upcoming = (eventsRes.data || [])
+                    .filter(event => new Date(event.date) >= now)
+                    .sort((a, b) => new Date(a.date) - new Date(b.date))
+                    .slice(0, 3);
+                setUpcomingEvents(upcoming);
+            } catch (eventError) {
+                console.error('Error fetching events:', eventError);
+                setUpcomingEvents([]);
+            }
             
-            const recent = noticesRes.data
-                .sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt))
-                .slice(0, 3);
-            setRecentNotices(recent);
+            try {
+                const noticesRes = await api.get('/api/admin/notices');
+                const recent = (noticesRes.data || [])
+                    .sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt))
+                    .slice(0, 3);
+                setRecentNotices(recent);
+            } catch (noticeError) {
+                console.error('Error fetching notices:', noticeError);
+                setRecentNotices([]);
+            }
         } catch (error) {
             console.error('Error fetching dashboard data:', error);
         } finally {
