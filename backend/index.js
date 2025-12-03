@@ -1,6 +1,7 @@
 import express from 'express';
 import cors from 'cors';
 import dotenv from 'dotenv';
+import bcrypt from 'bcryptjs';
 import { PrismaClient } from '@prisma/client';
 
 // Import routes
@@ -35,8 +36,95 @@ app.use('/api/teacher', teacherRoutes);
 
 
 // Health check
-app.get('/', (req, res) => {
-  res.json({ message: 'EduMate API is running!' });
+app.get('/', async (req, res) => {
+  try {
+    // Test database connection
+    await prisma.$queryRaw`SELECT 1`;
+    res.json({ 
+      message: 'EduMate API is running!',
+      database: 'Connected',
+      timestamp: new Date().toISOString()
+    });
+  } catch (error) {
+    res.status(500).json({ 
+      message: 'EduMate API is running but database connection failed',
+      database: 'Disconnected',
+      error: error.message,
+      timestamp: new Date().toISOString()
+    });
+  }
+});
+
+// Debug endpoint
+app.get('/debug', async (req, res) => {
+  try {
+    const userCount = await prisma.user.count();
+    const studentCount = await prisma.student.count();
+    const teacherCount = await prisma.teacher.count();
+    
+    const students = await prisma.student.findMany({ take: 3 });
+    const teachers = await prisma.teacher.findMany({ take: 3 });
+    
+    res.json({
+      counts: { users: userCount, students: studentCount, teachers: teacherCount },
+      sampleData: { students, teachers },
+      timestamp: new Date().toISOString()
+    });
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+});
+
+// Test endpoints without auth
+app.get('/test/students', async (req, res) => {
+  try {
+    const students = await prisma.student.findMany({ take: 10 });
+    res.json(students);
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+});
+
+app.get('/test/teachers', async (req, res) => {
+  try {
+    const teachers = await prisma.teacher.findMany({ take: 10 });
+    res.json(teachers);
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+});
+
+app.post('/test/login', async (req, res) => {
+  try {
+    const { email, password } = req.body;
+    console.log('🔍 Test login attempt for:', email);
+    
+    const user = await prisma.user.findUnique({ where: { email } });
+    console.log('👤 User found:', user ? 'Yes' : 'No');
+    
+    if (!user) {
+      console.log('❌ User not found');
+      return res.status(400).json({ error: 'User not found' });
+    }
+    
+    console.log('🔑 Comparing passwords...');
+    const isValid = await bcrypt.compare(password, user.password);
+    console.log('✅ Password valid:', isValid);
+    
+    if (!isValid) {
+      console.log('❌ Invalid password');
+      return res.status(400).json({ error: 'Invalid password' });
+    }
+    
+    console.log('🎉 Login successful!');
+    res.json({ 
+      message: 'Login successful', 
+      user: { email: user.email, role: user.role, name: user.name }
+    });
+  } catch (error) {
+    console.error('💥 Login error:', error);
+    res.status(500).json({ error: error.message });
+  }
 });
 
 // Error handling middleware
@@ -55,8 +143,26 @@ app.use((req, res) => {
   res.status(404).json({ error: 'Route not found' });
 });
 
-app.listen(PORT, () => {
+app.listen(PORT, async () => {
   console.log(`Server running on port ${PORT}`);
+  
+  // Test database connection
+  try {
+    await prisma.$connect();
+    console.log('✅ Database connected successfully');
+    
+    // Test a simple query
+    const userCount = await prisma.user.count();
+    const studentCount = await prisma.student.count();
+    const teacherCount = await prisma.teacher.count();
+    
+    console.log(`📊 Database stats:`);
+    console.log(`   Users: ${userCount}`);
+    console.log(`   Students: ${studentCount}`);
+    console.log(`   Teachers: ${teacherCount}`);
+  } catch (error) {
+    console.error('❌ Database connection failed:', error.message);
+  }
 });
 
 // Export prisma for use in routes

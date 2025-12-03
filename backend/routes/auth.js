@@ -47,12 +47,19 @@ router.post('/signup', async (req, res) => {
 // Login
 router.post('/login', async (req, res) => {
   try {
+    console.log('🔐 Login attempt:', req.body);
     const { email, password } = req.body;
+
+    if (!email || !password) {
+      console.log('❌ Missing email or password');
+      return res.status(400).json({ error: 'Email and password required' });
+    }
 
     // Check User table first
     let user = await connectWithRetry(() => 
       prisma.user.findUnique({ where: { email } })
     );
+    console.log('👤 User found in User table:', user ? 'Yes' : 'No');
 
     let userType = 'USER';
     let userRole = user?.role;
@@ -62,6 +69,7 @@ router.post('/login', async (req, res) => {
       const student = await connectWithRetry(() => 
         prisma.student.findUnique({ where: { email } })
       );
+      console.log('🎓 Student found:', student ? 'Yes' : 'No');
       if (student) {
         user = student;
         userType = 'STUDENT';
@@ -74,6 +82,7 @@ router.post('/login', async (req, res) => {
       const teacher = await connectWithRetry(() => 
         prisma.teacher.findUnique({ where: { email } })
       );
+      console.log('👨‍🏫 Teacher found:', teacher ? 'Yes' : 'No');
       if (teacher) {
         user = teacher;
         userType = 'TEACHER';
@@ -82,12 +91,17 @@ router.post('/login', async (req, res) => {
     }
 
     if (!user) {
+      console.log('❌ No user found with email:', email);
       return res.status(400).json({ error: 'Invalid credentials' });
     }
 
+    console.log('🔍 Found user:', { email: user.email, role: userRole, type: userType });
+    
     const isValidPassword = await bcrypt.compare(password, user.password);
+    console.log('🔑 Password valid:', isValidPassword);
 
     if (!isValidPassword) {
+      console.log('❌ Invalid password for:', email);
       return res.status(400).json({ error: 'Invalid credentials' });
     }
 
@@ -97,13 +111,14 @@ router.post('/login', async (req, res) => {
       { expiresIn: '24h' }
     );
 
+    console.log('✅ Login successful for:', email);
     res.json({
       message: 'Login successful',
       token,
       user: { id: user.id, email: user.email, name: user.name, role: userRole }
     });
   } catch (error) {
-    console.error('Login error:', error);
+    console.error('❌ Login error:', error);
     res.status(500).json({ error: error.message });
   }
 });

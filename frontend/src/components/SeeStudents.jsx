@@ -6,6 +6,7 @@ import EditStudent from './EditStudent';
 const SeeStudents = ({ onClose, onSuccess, inline = false }) => {
   const [students, setStudents] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
   const [showAddStudent, setShowAddStudent] = useState(false);
   const [editingStudent, setEditingStudent] = useState(null);
   const [detailStudent, setDetailStudent] = useState(null);
@@ -17,11 +18,22 @@ const SeeStudents = ({ onClose, onSuccess, inline = false }) => {
 
   const fetchStudents = async () => {
     try {
+      console.log('🔍 Fetching students from:', api.defaults.baseURL + '/api/admin/students');
+      console.log('🔑 Token:', localStorage.getItem('token') ? 'Present' : 'Missing');
       const response = await api.get('/api/admin/students');
-      console.log('Students response:', response.data);
-      setStudents(response.data);
+      console.log('✅ Students response:', response.data);
+      console.log('📊 Students count:', response.data?.length || 0);
+      setStudents(response.data || []);
+      setError(null);
     } catch (error) {
-      console.error('Failed to fetch students:', error.response?.data || error.message);
+      console.error('❌ Failed to fetch students:', error);
+      console.log('📋 Error details:', {
+        status: error.response?.status,
+        data: error.response?.data,
+        message: error.message,
+        url: error.config?.url
+      });
+      setError(error.response?.data?.error || error.message);
     }
     setLoading(false);
   };

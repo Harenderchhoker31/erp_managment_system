@@ -7,6 +7,7 @@ import EditTeacher from './EditTeacher';
 const SeeTeachers = ({ onClose, onSuccess, inline = false }) => {
   const [teachers, setTeachers] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
   const [showAddTeacher, setShowAddTeacher] = useState(false);
   const [editingTeacher, setEditingTeacher] = useState(null);
   const [detailTeacher, setDetailTeacher] = useState(null);
@@ -19,11 +20,20 @@ const SeeTeachers = ({ onClose, onSuccess, inline = false }) => {
 
   const fetchTeachers = async () => {
     try {
+      console.log('Fetching teachers from:', api.defaults.baseURL + '/api/admin/teachers');
       const response = await api.get('/api/admin/teachers');
       console.log('Teachers response:', response.data);
-      setTeachers(response.data);
+      setTeachers(response.data || []);
+      setError(null);
     } catch (error) {
-      console.error('Failed to fetch teachers:', error.response?.data || error.message);
+      console.error('Failed to fetch teachers:', error);
+      const errorMsg = error.response?.data?.error || error.message || 'Failed to fetch teachers';
+      setError(errorMsg);
+      console.log('Error details:', {
+        status: error.response?.status,
+        data: error.response?.data,
+        message: error.message
+      });
     }
     setLoading(false);
   };
