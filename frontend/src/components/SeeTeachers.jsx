@@ -20,9 +20,10 @@ const SeeTeachers = ({ onClose, onSuccess, inline = false }) => {
   const fetchTeachers = async () => {
     try {
       const response = await api.get('/api/admin/teachers');
+      console.log('Teachers response:', response.data);
       setTeachers(response.data);
     } catch (error) {
-      console.error('Failed to fetch teachers');
+      console.error('Failed to fetch teachers:', error.response?.data || error.message);
     }
     setLoading(false);
   };
@@ -34,7 +35,7 @@ const SeeTeachers = ({ onClose, onSuccess, inline = false }) => {
       onSuccess('Teacher deleted successfully');
       setDeleteTeacher(null);
     } catch (error) {
-      console.error('Failed to delete teacher');
+      console.error('Failed to delete teacher:', error.response?.data || error.message);
       setDeleteTeacher(null);
     }
   };

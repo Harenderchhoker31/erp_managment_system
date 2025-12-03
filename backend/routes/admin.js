@@ -1,10 +1,9 @@
 import express from 'express';
 import bcrypt from 'bcryptjs';
-import { PrismaClient } from '@prisma/client';
+import prisma, { connectWithRetry } from '../lib/db.js';
 import { authenticateToken, authorizeRole } from '../middleware/auth.js';
 
 const router = express.Router();
-const prisma = new PrismaClient();
 
 // Add Student
 router.post('/students', authenticateToken, authorizeRole(['ADMIN']), async (req, res) => {
@@ -65,7 +64,8 @@ router.post('/teachers', authenticateToken, authorizeRole(['ADMIN']), async (req
 
     const hashedPassword = await bcrypt.hash(password, 10);
 
-    const teacher = await prisma.teacher.create({
+    const teacher = await connectWithRetry(() => 
+      prisma.teacher.create({
       data: {
         email,
         password: hashedPassword,
@@ -91,8 +91,8 @@ router.post('/teachers', authenticateToken, authorizeRole(['ADMIN']), async (req
         ifscCode: ifscCode || '',
         salary: salary ? parseFloat(salary) : 0,
         joiningDate: joiningDate ? new Date(joiningDate) : new Date()
-      }
-    });
+      })
+    );
 
     res.status(201).json({ message: 'Teacher added successfully', teacher });
   } catch (error) {
@@ -103,11 +103,14 @@ router.post('/teachers', authenticateToken, authorizeRole(['ADMIN']), async (req
 // Get all students
 router.get('/students', authenticateToken, authorizeRole(['ADMIN']), async (req, res) => {
   try {
-    const students = await prisma.student.findMany({
-      orderBy: { createdAt: 'desc' }
-    });
+    const students = await connectWithRetry(() => 
+      prisma.student.findMany({
+        orderBy: { createdAt: 'desc' }
+      })
+    );
     res.json(students);
   } catch (error) {
+    console.error('Get students error:', error);
     res.status(500).json({ error: error.message });
   }
 });
@@ -115,14 +118,17 @@ router.get('/students', authenticateToken, authorizeRole(['ADMIN']), async (req,
 // Get all teachers
 router.get('/teachers', authenticateToken, authorizeRole(['ADMIN']), async (req, res) => {
   try {
-    const teachers = await prisma.teacher.findMany({
-      include: {
-        teacherClasses: true
-      },
-      orderBy: { createdAt: 'desc' }
-    });
+    const teachers = await connectWithRetry(() => 
+      prisma.teacher.findMany({
+        include: {
+          teacherClasses: true
+        },
+        orderBy: { createdAt: 'desc' }
+      })
+    );
     res.json(teachers);
   } catch (error) {
+    console.error('Get teachers error:', error);
     res.status(500).json({ error: error.message });
   }
 });

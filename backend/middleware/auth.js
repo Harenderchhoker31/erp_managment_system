@@ -1,7 +1,5 @@
 import jwt from 'jsonwebtoken';
-import { PrismaClient } from '@prisma/client';
-
-const prisma = new PrismaClient();
+import prisma, { connectWithRetry } from '../lib/db.js';
 
 export const authenticateToken = async (req, res, next) => {
   const authHeader = req.headers['authorization'];
@@ -13,9 +11,11 @@ export const authenticateToken = async (req, res, next) => {
 
   try {
     const decoded = jwt.verify(token, process.env.JWT_SECRET);
-    const user = await prisma.user.findUnique({
-      where: { id: decoded.userId }
-    });
+    const user = await connectWithRetry(() => 
+      prisma.user.findUnique({
+        where: { id: decoded.userId }
+      })
+    );
 
     if (!user) {
       return res.status(401).json({ error: 'Invalid token' });
@@ -24,6 +24,7 @@ export const authenticateToken = async (req, res, next) => {
     req.user = user;
     next();
   } catch (error) {
+    console.error('Auth error:', error);
     return res.status(403).json({ error: 'Invalid token' });
   }
 };

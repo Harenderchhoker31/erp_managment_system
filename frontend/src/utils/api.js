@@ -1,6 +1,6 @@
 import axios from 'axios';
 
-const API_BASE_URL = 'http://localhost:5000';
+const API_BASE_URL = 'https://erp-managment-system-xx77.vercel.app';
 
 const api = axios.create({
   baseURL: API_BASE_URL,

@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import axios from 'axios';
+import api from '../utils/api';
 import AddStudent from './AddStudent';
 import EditStudent from './EditStudent';
 
@@ -17,17 +17,18 @@ const SeeStudents = ({ onClose, onSuccess, inline = false }) => {
 
   const fetchStudents = async () => {
     try {
-      const response = await axios.get('/api/admin/students');
+      const response = await api.get('/api/admin/students');
+      console.log('Students response:', response.data);
       setStudents(response.data);
     } catch (error) {
-      console.error('Failed to fetch students');
+      console.error('Failed to fetch students:', error.response?.data || error.message);
     }
     setLoading(false);
   };
 
   const handleDelete = async () => {
     try {
-      await axios.delete(`/api/admin/students/${deleteStudent.id}`);
+      await api.delete(`/api/admin/students/${deleteStudent.id}`);
       setStudents(students.filter(s => s.id !== deleteStudent.id));
       onSuccess('Student deleted successfully');
       setDeleteStudent(null);
