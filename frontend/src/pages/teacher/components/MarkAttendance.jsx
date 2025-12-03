@@ -92,23 +92,30 @@ const MarkAttendance = () => {
 
     return (
         <div className="space-y-6">
-            <div className="bg-white rounded-lg shadow-md p-6">
-                <h2 className="text-2xl font-bold text-gray-900 mb-6">Mark Attendance</h2>
+            {/* Header */}
+            <div className="flex justify-between items-center p-4 bg-white border border-gray-300 rounded">
+                <div>
+                    <h3 className="text-xl font-bold text-gray-900">Mark Attendance</h3>
+                    <p className="text-gray-600 text-sm">Record student attendance for classes</p>
+                </div>
+            </div>
 
-                {message && (
-                    <div className={`mb-4 p-4 rounded-lg ${message.includes('Error') ? 'bg-red-50 text-red-700' : 'bg-green-50 text-green-700'}`}>
-                        {message}
-                    </div>
-                )}
+            {message && (
+                <div className={`p-4 rounded ${message.includes('Error') ? 'bg-red-50 border-l-4 border-red-400 text-red-700' : 'bg-green-50 border-l-4 border-green-400 text-green-700'}`}>
+                    {message}
+                </div>
+            )}
 
-                {/* Class Selection */}
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
+            {/* Class Selection */}
+            <div className="bg-white border border-gray-300 rounded p-4">
+                <h4 className="text-lg font-semibold text-gray-900 mb-4">Select Class & Date</h4>
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                     <div>
                         <label className="block text-sm font-medium text-gray-700 mb-2">Select Class</label>
                         <select
                             value={selectedClass}
                             onChange={(e) => setSelectedClass(e.target.value)}
-                            className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent"
+                            className="w-full px-4 py-2 border border-gray-300 rounded focus:outline-none focus:border-blue-500"
                         >
                             <option value="">Choose class...</option>
                             {uniqueClasses.map(className => (
@@ -122,7 +129,7 @@ const MarkAttendance = () => {
                         <select
                             value={selectedSection}
                             onChange={(e) => setSelectedSection(e.target.value)}
-                            className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent"
+                            className="w-full px-4 py-2 border border-gray-300 rounded focus:outline-none focus:border-blue-500"
                         >
                             <option value="">Choose section...</option>
                             {classes
@@ -141,55 +148,60 @@ const MarkAttendance = () => {
                             type="date"
                             value={date}
                             onChange={(e) => setDate(e.target.value)}
-                            className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent"
+                            className="w-full px-4 py-2 border border-gray-300 rounded focus:outline-none focus:border-blue-500"
                         />
                     </div>
                 </div>
+            </div>
 
-                {/* Students List */}
-                {students.length > 0 && (
+            {/* Students List */}
+            {students.length > 0 && (
+                <div className="bg-white border border-gray-300 rounded overflow-hidden">
+                    <div className="p-4 border-b">
+                        <h4 className="text-lg font-semibold text-gray-900">Student Attendance</h4>
+                    </div>
                     <form onSubmit={handleSubmit}>
-                        <div className="overflow-x-auto mb-6">
-                            <table className="min-w-full divide-y divide-gray-200">
-                                <thead className="bg-gray-50">
-                                    <tr>
-                                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Roll No</th>
-                                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Student Name</th>
-                                        <th className="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase">Present</th>
-                                        <th className="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase">Absent</th>
-                                        <th className="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase">Late</th>
+                        <div className="overflow-x-auto">
+                            <table className="w-full border-collapse">
+                                <thead>
+                                    <tr className="bg-red-600 text-white">
+                                        <th className="border border-gray-300 px-4 py-3 text-left text-sm font-semibold">Roll No</th>
+                                        <th className="border border-gray-300 px-4 py-3 text-left text-sm font-semibold">Student Name</th>
+                                        <th className="border border-gray-300 px-4 py-3 text-center text-sm font-semibold">Present</th>
+                                        <th className="border border-gray-300 px-4 py-3 text-center text-sm font-semibold">Absent</th>
+                                        <th className="border border-gray-300 px-4 py-3 text-center text-sm font-semibold">Late</th>
                                     </tr>
                                 </thead>
-                                <tbody className="bg-white divide-y divide-gray-200">
+                                <tbody>
                                     {students.map((student) => (
                                         <tr key={student.id} className="hover:bg-gray-50">
-                                            <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{student.rollNo}</td>
-                                            <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">{student.name}</td>
-                                            <td className="px-6 py-4 whitespace-nowrap text-center">
+                                            <td className="border border-gray-300 px-4 py-3 text-sm">{student.rollNo}</td>
+                                            <td className="border border-gray-300 px-4 py-3 text-sm font-medium">{student.name}</td>
+                                            <td className="border border-gray-300 px-4 py-3 text-center">
                                                 <input
                                                     type="radio"
                                                     name={`attendance-${student.id}`}
                                                     checked={attendance[student.id] === 'PRESENT'}
                                                     onChange={() => handleAttendanceChange(student.id, 'PRESENT')}
-                                                    className="h-4 w-4 text-green-600 focus:ring-green-500"
+                                                    className="h-4 w-4 text-green-600"
                                                 />
                                             </td>
-                                            <td className="px-6 py-4 whitespace-nowrap text-center">
+                                            <td className="border border-gray-300 px-4 py-3 text-center">
                                                 <input
                                                     type="radio"
                                                     name={`attendance-${student.id}`}
                                                     checked={attendance[student.id] === 'ABSENT'}
                                                     onChange={() => handleAttendanceChange(student.id, 'ABSENT')}
-                                                    className="h-4 w-4 text-red-600 focus:ring-red-500"
+                                                    className="h-4 w-4 text-red-600"
                                                 />
                                             </td>
-                                            <td className="px-6 py-4 whitespace-nowrap text-center">
+                                            <td className="border border-gray-300 px-4 py-3 text-center">
                                                 <input
                                                     type="radio"
                                                     name={`attendance-${student.id}`}
                                                     checked={attendance[student.id] === 'LATE'}
                                                     onChange={() => handleAttendanceChange(student.id, 'LATE')}
-                                                    className="h-4 w-4 text-yellow-600 focus:ring-yellow-500"
+                                                    className="h-4 w-4 text-yellow-600"
                                                 />
                                             </td>
                                         </tr>
@@ -198,20 +210,24 @@ const MarkAttendance = () => {
                             </table>
                         </div>
 
-                        <button
-                            type="submit"
-                            disabled={loading}
-                            className="w-full md:w-auto px-6 py-3 bg-purple-600 text-white rounded-lg hover:bg-purple-700 transition-colors disabled:bg-gray-400 font-medium"
-                        >
-                            {loading ? 'Submitting...' : 'Submit Attendance'}
-                        </button>
+                        <div className="p-4 border-t">
+                            <button
+                                type="submit"
+                                disabled={loading}
+                                className="px-6 py-2 bg-green-600 text-white rounded hover:bg-green-700 transition-colors disabled:bg-gray-400 font-medium"
+                            >
+                                {loading ? 'Submitting...' : 'Submit Attendance'}
+                            </button>
+                        </div>
                     </form>
-                )}
+                </div>
+            )}
 
-                {selectedClass && selectedSection && students.length === 0 && !loading && (
-                    <p className="text-center text-gray-500 py-8">No students found in this class</p>
-                )}
-            </div>
+            {selectedClass && selectedSection && students.length === 0 && !loading && (
+                <div className="bg-white border border-gray-300 rounded p-8 text-center">
+                    <p className="text-gray-500">No students found in this class</p>
+                </div>
+            )}
         </div>
     );
 };

@@ -480,7 +480,7 @@ router.post('/events', authenticateToken, authorizeRole(['ADMIN']), async (req, 
   }
 });
 
-router.get('/events', authenticateToken, authorizeRole(['ADMIN']), async (req, res) => {
+router.get('/events', authenticateToken, authorizeRole(['ADMIN', 'TEACHER']), async (req, res) => {
   try {
     const events = await prisma.event.findMany({
       orderBy: { date: 'asc' }
@@ -520,7 +520,7 @@ router.post('/notices', authenticateToken, authorizeRole(['ADMIN']), async (req,
   }
 });
 
-router.get('/notices', authenticateToken, authorizeRole(['ADMIN']), async (req, res) => {
+router.get('/notices', authenticateToken, authorizeRole(['ADMIN', 'TEACHER']), async (req, res) => {
   try {
     const notices = await prisma.notice.findMany({
       orderBy: { createdAt: 'desc' }

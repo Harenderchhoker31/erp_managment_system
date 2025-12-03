@@ -66,17 +66,21 @@ const CreateAssignment = () => {
     const uniqueClasses = [...new Set(classes.map(c => c.className))];
 
     return (
-        <div className="space-y-6">
-            {/* Create Assignment Form */}
-            <div className="bg-white rounded-lg shadow-md p-6">
-                <h2 className="text-2xl font-bold text-gray-900 mb-6">Create Assignment</h2>
+        <div className="space-y-4">
+            <div className="flex justify-between items-center p-4 bg-white border border-gray-300 rounded">
+                <div>
+                    <h3 className="text-xl font-bold text-gray-900">Create Assignment</h3>
+                    <p className="text-gray-600 text-sm">Create assignments for your classes</p>
+                </div>
+            </div>
 
-                {message && (
-                    <div className={`mb-4 p-4 rounded-lg ${message.includes('Error') ? 'bg-red-50 text-red-700' : 'bg-green-50 text-green-700'}`}>
-                        {message}
-                    </div>
-                )}
+            {message && (
+                <div className={`p-4 rounded ${message.includes('Error') ? 'bg-red-50 border-l-4 border-red-400 text-red-700' : 'bg-green-50 border-l-4 border-green-400 text-green-700'}`}>
+                    {message}
+                </div>
+            )}
 
+            <div className="bg-white border border-gray-300 rounded p-4">
                 <form onSubmit={handleSubmit} className="space-y-4">
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                         <div>
@@ -85,7 +89,7 @@ const CreateAssignment = () => {
                                 type="text"
                                 value={formData.title}
                                 onChange={(e) => setFormData({ ...formData, title: e.target.value })}
-                                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500"
+                                className="w-full px-4 py-2 border border-gray-300 rounded focus:outline-none focus:border-blue-500"
                                 placeholder="Assignment title"
                                 required
                             />
@@ -93,27 +97,34 @@ const CreateAssignment = () => {
 
                         <div>
                             <label className="block text-sm font-medium text-gray-700 mb-2">Subject *</label>
-                            <input
-                                type="text"
+                            <select
                                 value={formData.subject}
                                 onChange={(e) => setFormData({ ...formData, subject: e.target.value })}
-                                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500"
-                                placeholder="e.g., Mathematics"
+                                className="w-full px-4 py-2 border border-gray-300 rounded focus:outline-none focus:border-blue-500"
                                 required
-                            />
+                            >
+                                <option value="">Select subject...</option>
+                                {classes
+                                    .filter(c => c.className === formData.className && c.section === formData.section)
+                                    .map(c => c.subject)
+                                    .filter((v, i, a) => a.indexOf(v) === i)
+                                    .map(subj => (
+                                        <option key={subj} value={subj}>{subj}</option>
+                                    ))}
+                            </select>
                         </div>
 
                         <div>
                             <label className="block text-sm font-medium text-gray-700 mb-2">Class *</label>
                             <select
                                 value={formData.className}
-                                onChange={(e) => setFormData({ ...formData, className: e.target.value })}
-                                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500"
+                                onChange={(e) => setFormData({ ...formData, className: e.target.value, section: '', subject: '' })}
+                                className="w-full px-4 py-2 border border-gray-300 rounded focus:outline-none focus:border-blue-500"
                                 required
                             >
                                 <option value="">Choose class...</option>
                                 {uniqueClasses.map(className => (
-                                    <option key={className} value={className}>{className}</option>
+                                    <option key={className} value={className}>Class {className}</option>
                                 ))}
                             </select>
                         </div>
@@ -122,9 +133,10 @@ const CreateAssignment = () => {
                             <label className="block text-sm font-medium text-gray-700 mb-2">Section *</label>
                             <select
                                 value={formData.section}
-                                onChange={(e) => setFormData({ ...formData, section: e.target.value })}
-                                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500"
+                                onChange={(e) => setFormData({ ...formData, section: e.target.value, subject: '' })}
+                                className="w-full px-4 py-2 border border-gray-300 rounded focus:outline-none focus:border-blue-500"
                                 required
+                                disabled={!formData.className}
                             >
                                 <option value="">Choose section...</option>
                                 {classes
@@ -132,7 +144,7 @@ const CreateAssignment = () => {
                                     .map(c => c.section)
                                     .filter((v, i, a) => a.indexOf(v) === i)
                                     .map(section => (
-                                        <option key={section} value={section}>{section}</option>
+                                        <option key={section} value={section}>Section {section}</option>
                                     ))}
                             </select>
                         </div>
@@ -143,7 +155,7 @@ const CreateAssignment = () => {
                                 type="date"
                                 value={formData.dueDate}
                                 onChange={(e) => setFormData({ ...formData, dueDate: e.target.value })}
-                                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500"
+                                className="w-full px-4 py-2 border border-gray-300 rounded focus:outline-none focus:border-blue-500"
                                 required
                             />
                         </div>
@@ -154,7 +166,7 @@ const CreateAssignment = () => {
                         <textarea
                             value={formData.description}
                             onChange={(e) => setFormData({ ...formData, description: e.target.value })}
-                            className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500"
+                            className="w-full px-4 py-2 border border-gray-300 rounded focus:outline-none focus:border-blue-500"
                             rows="4"
                             placeholder="Assignment details and instructions..."
                             required
@@ -164,38 +176,40 @@ const CreateAssignment = () => {
                     <button
                         type="submit"
                         disabled={loading}
-                        className="w-full md:w-auto px-6 py-3 bg-purple-600 text-white rounded-lg hover:bg-purple-700 transition-colors disabled:bg-gray-400 font-medium"
+                        className="px-6 py-2 bg-green-600 text-white rounded hover:bg-green-700 transition-colors disabled:bg-gray-400 font-medium"
                     >
                         {loading ? 'Creating...' : 'Create Assignment'}
                     </button>
                 </form>
             </div>
 
-            {/* My Assignments List */}
-            <div className="bg-white rounded-lg shadow-md p-6">
-                <h3 className="text-xl font-bold text-gray-900 mb-4">My Assignments</h3>
-
-                {assignments.length > 0 ? (
-                    <div className="space-y-3">
-                        {assignments.map((assignment) => (
-                            <div key={assignment.id} className="border-l-4 border-purple-500 bg-purple-50 rounded-lg p-4">
-                                <div className="flex items-start justify-between">
-                                    <div className="flex-1">
-                                        <h4 className="font-semibold text-gray-900">{assignment.title}</h4>
-                                        <p className="text-sm text-gray-600 mt-1">{assignment.description}</p>
-                                        <div className="flex items-center gap-4 mt-2 text-sm text-gray-600">
-                                            <span>📚 {assignment.subject}</span>
-                                            <span>🏫 Class {assignment.class} - {assignment.section}</span>
-                                            <span>📅 Due: {new Date(assignment.dueDate).toLocaleDateString()}</span>
+            <div className="bg-white border border-gray-300 rounded overflow-hidden">
+                <div className="p-4 border-b">
+                    <h4 className="text-lg font-semibold text-gray-900">My Assignments</h4>
+                </div>
+                <div className="p-4">
+                    {assignments.length > 0 ? (
+                        <div className="space-y-3">
+                            {assignments.map((assignment) => (
+                                <div key={assignment.id} className="p-3 bg-blue-50 rounded-lg border-l-4 border-blue-500">
+                                    <div className="flex items-start justify-between">
+                                        <div className="flex-1">
+                                            <h4 className="font-semibold text-gray-900">{assignment.title}</h4>
+                                            <p className="text-sm text-gray-600 mt-1">{assignment.description}</p>
+                                            <div className="flex items-center gap-4 mt-2 text-sm text-gray-600">
+                                                <span>📚 {assignment.subject}</span>
+                                                <span>🏫 Class {assignment.className} - {assignment.section}</span>
+                                                <span>📅 Due: {new Date(assignment.dueDate).toLocaleDateString()}</span>
+                                            </div>
                                         </div>
                                     </div>
                                 </div>
-                            </div>
-                        ))}
-                    </div>
-                ) : (
-                    <p className="text-center text-gray-500 py-8">No assignments created yet</p>
-                )}
+                            ))}
+                        </div>
+                    ) : (
+                        <p className="text-gray-500 text-center py-4">No assignments created yet</p>
+                    )}
+                </div>
             </div>
         </div>
     );
