@@ -1,5 +1,4 @@
 import { useState, useEffect } from 'react';
-import axios from 'axios';
 import api from '../../../utils/api';
 
 const Dashboard = () => {
@@ -26,11 +25,7 @@ const Dashboard = () => {
 
   const fetchStats = async () => {
     try {
-      const token = localStorage.getItem('token');
-      const response = await axios.get('https://erp-managment-system-xx77.vercel.app/api/admin/stats', {
-        headers: { Authorization: `Bearer ${token}` }
-      });
-
+      const response = await api.get('/api/admin/stats');
       setStats({
         students: response.data.totalStudents,
         teachers: response.data.totalTeachers,

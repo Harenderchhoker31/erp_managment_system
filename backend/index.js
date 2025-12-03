@@ -38,8 +38,8 @@ app.use('/api/teacher', teacherRoutes);
 // Health check
 app.get('/', async (req, res) => {
   try {
-    // Test database connection
-    await prisma.$queryRaw`SELECT 1`;
+    // Test database connection with MongoDB
+    await prisma.user.count();
     res.json({ 
       message: 'EduMate API is running!',
       database: 'Connected',
