@@ -11,17 +11,28 @@ export const authenticateToken = async (req, res, next) => {
 
   try {
     const decoded = jwt.verify(token, process.env.JWT_SECRET);
-    const user = await connectWithRetry(() => 
-      prisma.user.findUnique({
-        where: { id: decoded.userId }
-      })
-    );
+    let user = null;
+
+    // Check based on userType from token
+    if (decoded.userType === 'TEACHER') {
+      user = await connectWithRetry(() => 
+        prisma.teacher.findUnique({ where: { id: decoded.userId } })
+      );
+    } else if (decoded.userType === 'STUDENT') {
+      user = await connectWithRetry(() => 
+        prisma.student.findUnique({ where: { id: decoded.userId } })
+      );
+    } else {
+      user = await connectWithRetry(() => 
+        prisma.user.findUnique({ where: { id: decoded.userId } })
+      );
+    }
 
     if (!user) {
       return res.status(401).json({ error: 'Invalid token' });
     }
 
-    req.user = user;
+    req.user = { ...user, role: decoded.role };
     next();
   } catch (error) {
     console.error('Auth error:', error);

@@ -18,6 +18,19 @@ api.interceptors.request.use((config) => {
   return config;
 });
 
+// Handle token expiration
+api.interceptors.response.use(
+  (response) => response,
+  (error) => {
+    if (error.response?.status === 401 || error.response?.data?.error?.includes('expired')) {
+      localStorage.removeItem('token');
+      localStorage.removeItem('user');
+      window.location.href = '/login';
+    }
+    return Promise.reject(error);
+  }
+);
+
 // Auth API
 export const authAPI = {
   login: (credentials) => api.post('/api/auth/login', credentials),

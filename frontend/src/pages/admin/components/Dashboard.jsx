@@ -27,13 +27,20 @@ const Dashboard = () => {
     try {
       const response = await api.get('/api/admin/stats');
       setStats({
-        students: response.data.totalStudents,
-        teachers: response.data.totalTeachers,
-        classes: response.data.totalClasses,
-        attendance: response.data.attendance
+        students: response.data.totalStudents || 0,
+        teachers: response.data.totalTeachers || 0,
+        classes: response.data.totalClasses || 0,
+        attendance: response.data.attendance || { present: 0, absent: 0, total: 0 }
       });
     } catch (error) {
       console.error('Failed to fetch stats:', error);
+      // Set default values if API fails
+      setStats({
+        students: 0,
+        teachers: 0,
+        classes: 0,
+        attendance: { present: 0, absent: 0, total: 0 }
+      });
     }
   };
 
