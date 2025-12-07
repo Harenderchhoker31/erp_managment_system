@@ -5,18 +5,20 @@ const StudentSidebar = ({ activeSection, setActiveSection }) => {
 
   const menuItems = [
     { id: 'dashboard', label: 'Dashboard' },
-    { id: 'attendance', label: 'Attendance' },
-    { id: 'marks', label: 'Marks' },
+    { id: 'attendance', label: 'My Attendance' },
+    { id: 'marks', label: 'My Marks' },
     { id: 'assignments', label: 'Assignments' },
-    { id: 'fees', label: 'Fees' },
-    { id: 'events', label: 'Events' },
+    { id: 'fees', label: 'Fee Status' },
+    { id: 'events', label: 'School Events' },
+    { id: 'notices', label: 'Notices' },
+    { id: 'feedback', label: 'Send Feedback' },
   ];
 
   return (
     <div className="w-64 bg-white border-r h-screen flex flex-col fixed left-0 top-0 z-10">
       <div className="p-4 bg-red-600 text-white">
         <h1 className="text-xl font-bold">EduMate</h1>
-        <p className="text-sm">Student Panel</p>
+        <p className="text-sm">Student Portal</p>
       </div>
 
       <div className="p-3 border-b bg-gray-50">

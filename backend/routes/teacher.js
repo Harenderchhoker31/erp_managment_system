@@ -209,6 +209,12 @@ router.get('/events', authenticateToken, authorizeRole(['TEACHER']), async (req,
 router.get('/feedback', authenticateToken, authorizeRole(['TEACHER']), async (req, res) => {
   try {
     const feedback = await prisma.feedback.findMany({
+      where: { teacherId: req.user.id },
+      include: {
+        parent: {
+          select: { name: true, email: true }
+        }
+      },
       orderBy: { createdAt: 'desc' }
     });
     res.json(feedback);

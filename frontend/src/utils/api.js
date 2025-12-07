@@ -64,7 +64,9 @@ export const studentAPI = {
   getAssignments: () => api.get('/api/student/assignments'),
   getFees: () => api.get('/api/student/fees'),
   getEvents: () => api.get('/api/student/events'),
-  getNotifications: () => api.get('/api/student/notifications'),
+  getNotices: () => api.get('/api/student/notices'),
+  getTeachers: () => api.get('/api/student/teachers'),
+  sendFeedback: (feedbackData) => api.post('/api/student/feedback', feedbackData),
 };
 
 // Teacher API

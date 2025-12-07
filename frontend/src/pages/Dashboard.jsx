@@ -1,6 +1,6 @@
 import { useAuth } from '../context/AuthContext';
 import AdminPanel from './admin/AdminPanel';
-import StudentPanel from './StudentPanel';
+import StudentPanel from './student/StudentPanel';
 import TeacherPanel from './TeacherPanel';
 
 const Dashboard = () => {

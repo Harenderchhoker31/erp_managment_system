@@ -94,6 +94,7 @@ model Teacher {
   classes     Class[]
   teacherClasses TeacherClass[]
   salaries    Salary[]
+  feedbacks   Feedback[]
 }
 
 model TeacherClass {
@@ -246,10 +247,12 @@ model Feedback {
   parentId  String   @db.ObjectId
   message   String
   rating    Int?
+  teacherId String?  @db.ObjectId
   createdAt DateTime @default(now())
 
   // Relations
   parent User @relation(fields: [parentId], references: [id])
+  teacher Teacher? @relation(fields: [teacherId], references: [id])
 }
 
 enum Role {
