@@ -1,7 +1,7 @@
 import { useAuth } from '../context/AuthContext';
 import AdminPanel from './admin/AdminPanel';
 import StudentPanel from './student/StudentPanel';
-import TeacherPanel from './TeacherPanel';
+import TeacherPanel from './teacher/TeacherPanel';
 
 const Dashboard = () => {
   const { user } = useAuth();

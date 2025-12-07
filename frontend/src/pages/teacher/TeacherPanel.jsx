@@ -1,17 +1,16 @@
 import { useState, useEffect } from 'react';
-import { useAuth } from '../context/AuthContext';
-import { teacherAPI } from '../utils/api';
-import TeacherSidebar from './teacher/components/TeacherSidebar';
-import TeacherDashboard from './teacher/components/TeacherDashboard';
-import MarkAttendance from './teacher/components/MarkAttendance';
-import UploadMarks from './teacher/components/UploadMarks';
-import CreateAssignment from './teacher/components/CreateAssignment';
-import ViewClasses from './teacher/components/ViewClasses';
-import CreateEvent from './teacher/components/CreateEvent';
-import CreateEventComponent from './teacher/components/CreateEventComponent';
-import ViewStudents from './teacher/components/ViewStudents';
-
-import ParentFeedback from './teacher/components/ParentFeedback';
+import { useAuth } from '../../context/AuthContext';
+import { teacherAPI } from '../../utils/api';
+import TeacherSidebar from './components/TeacherSidebar';
+import TeacherDashboard from './components/TeacherDashboard';
+import MarkAttendance from './components/MarkAttendance';
+import UploadMarks from './components/UploadMarks';
+import CreateAssignment from './components/CreateAssignment';
+import ViewClasses from './components/ViewClasses';
+import CreateEvent from './components/CreateEvent';
+import CreateEventComponent from './components/CreateEventComponent';
+import ViewStudents from './components/ViewStudents';
+import ParentFeedback from './components/ParentFeedback';
 
 const TeacherPanel = () => {
   const { user } = useAuth();

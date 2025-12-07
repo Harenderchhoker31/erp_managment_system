@@ -55,77 +55,7 @@ app.get('/', async (req, res) => {
   }
 });
 
-// Debug endpoint
-app.get('/debug', async (req, res) => {
-  try {
-    const userCount = await prisma.user.count();
-    const studentCount = await prisma.student.count();
-    const teacherCount = await prisma.teacher.count();
-    
-    const students = await prisma.student.findMany({ take: 3 });
-    const teachers = await prisma.teacher.findMany({ take: 3 });
-    
-    res.json({
-      counts: { users: userCount, students: studentCount, teachers: teacherCount },
-      sampleData: { students, teachers },
-      timestamp: new Date().toISOString()
-    });
-  } catch (error) {
-    res.status(500).json({ error: error.message });
-  }
-});
 
-// Test endpoints without auth
-app.get('/test/students', async (req, res) => {
-  try {
-    const students = await prisma.student.findMany({ take: 10 });
-    res.json(students);
-  } catch (error) {
-    res.status(500).json({ error: error.message });
-  }
-});
-
-app.get('/test/teachers', async (req, res) => {
-  try {
-    const teachers = await prisma.teacher.findMany({ take: 10 });
-    res.json(teachers);
-  } catch (error) {
-    res.status(500).json({ error: error.message });
-  }
-});
-
-app.post('/test/login', async (req, res) => {
-  try {
-    const { email, password } = req.body;
-    console.log('🔍 Test login attempt for:', email);
-    
-    const user = await prisma.user.findUnique({ where: { email } });
-    console.log('👤 User found:', user ? 'Yes' : 'No');
-    
-    if (!user) {
-      console.log('❌ User not found');
-      return res.status(400).json({ error: 'User not found' });
-    }
-    
-    console.log('🔑 Comparing passwords...');
-    const isValid = await bcrypt.compare(password, user.password);
-    console.log('✅ Password valid:', isValid);
-    
-    if (!isValid) {
-      console.log('❌ Invalid password');
-      return res.status(400).json({ error: 'Invalid password' });
-    }
-    
-    console.log('🎉 Login successful!');
-    res.json({ 
-      message: 'Login successful', 
-      user: { email: user.email, role: user.role, name: user.name }
-    });
-  } catch (error) {
-    console.error('💥 Login error:', error);
-    res.status(500).json({ error: error.message });
-  }
-});
 
 // Error handling middleware
 app.use((err, req, res, next) => {
@@ -154,8 +84,7 @@ app.listen(PORT, async () => {
   }
 });
 
-// Export prisma for use in routes
-export { prisma };
+
 
 // Graceful shutdown
 process.on('SIGINT', async () => {

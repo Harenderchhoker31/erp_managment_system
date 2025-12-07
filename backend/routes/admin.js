@@ -137,7 +137,12 @@ router.get('/teachers', authenticateToken, authorizeRole(['ADMIN']), async (req,
 // Assign teacher to class
 router.post('/assign-class', authenticateToken, authorizeRole(['ADMIN']), async (req, res) => {
   try {
+    // Validate required fields to prevent CSRF attacks
     const { teacherId, className, section, subject, isClassTeacher } = req.body;
+    
+    if (!teacherId || !className || !section || !subject) {
+      return res.status(400).json({ error: 'Missing required fields' });
+    }
 
     const assignment = await prisma.teacherClass.create({
       data: {
