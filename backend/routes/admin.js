@@ -875,6 +875,40 @@ router.put('/fees/:id', authenticateToken, authorizeRole(['ADMIN']), async (req,
   }
 });
 
+// Get all marks
+router.get('/marks', authenticateToken, authorizeRole(['ADMIN']), async (req, res) => {
+  try {
+    const marks = await prisma.mark.findMany({
+      include: {
+        student: {
+          select: { name: true, rollNo: true }
+        }
+      },
+      orderBy: { createdAt: 'desc' }
+    });
+    res.json(marks);
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+});
+
+// Get all attendance
+router.get('/attendance', authenticateToken, authorizeRole(['ADMIN']), async (req, res) => {
+  try {
+    const attendance = await prisma.attendance.findMany({
+      include: {
+        student: {
+          select: { name: true, rollNo: true }
+        }
+      },
+      orderBy: { date: 'desc' }
+    });
+    res.json(attendance);
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+});
+
 router.get('/unpaid-fees-count', authenticateToken, authorizeRole(['ADMIN']), async (req, res) => {
   try {
     const currentMonth = new Date().getMonth() + 1;

@@ -6,6 +6,7 @@ import ManageTeachers from './components/ManageTeachers';
 import ManageClasses from './components/ManageClasses';
 import ViewClasses from './components/ViewClasses';
 import ViewAttendance from './components/ViewAttendance';
+import TrackProgress from './components/TrackProgress';
 import ManageEventsNotices from './components/ManageEventsNotices';
 import SalaryManagement from './components/SalaryManagement';
 import FeeManagement from './components/FeeManagement';
@@ -33,6 +34,8 @@ const AdminPanel = () => {
         return <ManageClasses onSuccess={handleSuccess} />;
       case 'attendance':
         return <ViewAttendance onSuccess={handleSuccess} />;
+      case 'track-progress':
+        return <TrackProgress />;
       case 'events-notices':
         return <ManageEventsNotices onSuccess={handleSuccess} />;
       case 'salary':
