@@ -15,15 +15,15 @@ const ClassDetails = ({ classData, onBack }) => {
 
   useEffect(() => {
     if (students.length > 0) {
-      fetchUnpaidCount();
+      fetchClassData();
     }
-  }, [selectedMonth, selectedYear, students.length]);
+  }, [selectedMonth, selectedYear]);
 
   const fetchClassData = async () => {
     try {
-      const studentsRes = await api.get(`/api/admin/students/class/${classData.name}/${classData.section}`);
+      const studentsRes = await api.get(`/api/admin/students/class/${classData.name}/${classData.section}?month=${selectedMonth}&year=${selectedYear}`);
       setStudents(studentsRes.data);
-      await fetchUnpaidCount();
+      fetchUnpaidCount();
     } catch (error) {
       console.error('Failed to fetch class data');
     }
@@ -53,7 +53,9 @@ const ClassDetails = ({ classData, onBack }) => {
 
 
 
-  const presentStudents = Math.floor(students.length * 0.85);
+  const presentStudents = students.filter(s => s.todayAttendance === 'PRESENT').length;
+  const absentStudents = students.filter(s => s.todayAttendance === 'ABSENT').length;
+  const leaveStudents = students.filter(s => s.todayAttendance === 'LEAVE').length;
 
   return (
     <div className="flex h-full">
@@ -91,21 +93,58 @@ const ClassDetails = ({ classData, onBack }) => {
                     <th className="px-4 py-3 text-left">Name</th>
                     <th className="px-4 py-3 text-left">Email</th>
                     <th className="px-4 py-3 text-left">Gender</th>
+                    <th className="px-4 py-3 text-left">Attendance</th>
+                    <th className="px-4 py-3 text-left">Fee Status</th>
                     <th className="px-4 py-3 text-left">Father Name</th>
                     <th className="px-4 py-3 text-left">Phone</th>
                   </tr>
                 </thead>
                 <tbody>
-                  {students.map((student) => (
-                    <tr key={student.id} className="border-t hover:bg-gray-50">
-                      <td className="px-4 py-3 font-medium">{student.rollNo}</td>
-                      <td className="px-4 py-3">{student.name}</td>
-                      <td className="px-4 py-3">{student.email}</td>
-                      <td className="px-4 py-3">{student.gender}</td>
-                      <td className="px-4 py-3">{student.fatherName}</td>
-                      <td className="px-4 py-3">{student.fatherPhone}</td>
-                    </tr>
-                  ))}
+                  {students.map((student) => {
+                    const getAttendanceDisplay = (attendance) => {
+                      if (!attendance) return '-';
+                      switch (attendance) {
+                        case 'PRESENT': return 'P';
+                        case 'ABSENT': return 'A';
+                        case 'LEAVE': return 'L';
+                        default: return '-';
+                      }
+                    };
+
+                    const getAttendanceColor = (attendance) => {
+                      switch (attendance) {
+                        case 'PRESENT': return 'text-green-600 bg-green-100';
+                        case 'ABSENT': return 'text-red-600 bg-red-100';
+                        case 'LEAVE': return 'text-blue-600 bg-blue-100';
+                        default: return 'text-gray-600 bg-gray-100';
+                      }
+                    };
+
+                    return (
+                      <tr key={student.id} className="border-t hover:bg-gray-50">
+                        <td className="px-4 py-3 font-medium">{student.rollNo}</td>
+                        <td className="px-4 py-3">{student.name}</td>
+                        <td className="px-4 py-3">{student.email}</td>
+                        <td className="px-4 py-3">{student.gender}</td>
+                        <td className="px-4 py-3">
+                          <span className={`px-2 py-1 rounded text-sm font-medium ${getAttendanceColor(student.todayAttendance)}`}>
+                            {getAttendanceDisplay(student.todayAttendance)}
+                          </span>
+                        </td>
+                        <td className="px-4 py-3">
+                          <span className={`px-2 py-1 rounded text-sm font-medium ${
+                            student.feeStatus === 'PAID' 
+                              ? 'text-green-600 bg-green-100' 
+                              : 'text-red-600 bg-red-100'
+                          }`}>
+                            {student.feeStatus === 'PAID' ? 'Paid' : 'Pending'}
+                          </span>
+                        </td>
+                        <td className="px-4 py-3">{student.fatherName}</td>
+                        <td className="px-4 py-3">{student.fatherPhone}</td>
+                      </tr>
+                    );
+                  })}
                 </tbody>
               </table>
             </div>
@@ -144,7 +183,11 @@ const ClassDetails = ({ classData, onBack }) => {
             </div>
             <div className="flex justify-between">
               <span>Absent Today:</span>
-              <span className="font-medium text-red-600">{students.length - presentStudents}</span>
+              <span className="font-medium text-red-600">{absentStudents}</span>
+            </div>
+            <div className="flex justify-between">
+              <span>Leave Today:</span>
+              <span className="font-medium text-blue-600">{leaveStudents}</span>
             </div>
           </div>
         </div>

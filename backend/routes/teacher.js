@@ -62,21 +62,47 @@ router.get('/students/:className/:section', authenticateToken, authorizeRole(['T
 router.post('/attendance', authenticateToken, authorizeRole(['TEACHER']), async (req, res) => {
   try {
     const { attendanceRecords, date } = req.body;
+    console.log('Attendance submission:', { attendanceRecords, date, teacherId: req.user.id });
+    
+    if (!attendanceRecords || !Array.isArray(attendanceRecords) || attendanceRecords.length === 0) {
+      return res.status(400).json({ error: 'No attendance records provided' });
+    }
+    
+    if (!date) {
+      return res.status(400).json({ error: 'Date is required' });
+    }
+
+    // Delete existing attendance for the same date first
+    const studentIds = attendanceRecords.map(record => record.studentId);
+    const attendanceDate = new Date(date);
+    attendanceDate.setHours(0, 0, 0, 0);
+    const nextDay = new Date(attendanceDate);
+    nextDay.setDate(nextDay.getDate() + 1);
+
+    await prisma.attendance.deleteMany({
+      where: {
+        studentId: { in: studentIds },
+        date: {
+          gte: attendanceDate,
+          lt: nextDay
+        }
+      }
+    });
     
     const attendanceData = attendanceRecords.map(record => ({
       studentId: record.studentId,
       status: record.status,
-      date: new Date(date),
-      markedBy: req.user.id
+      date: attendanceDate
     }));
 
-    await prisma.attendance.createMany({
-      data: attendanceData,
-      skipDuplicates: true
+    const result = await prisma.attendance.createMany({
+      data: attendanceData
     });
 
-    res.status(201).json({ message: 'Attendance marked successfully' });
+    console.log('Attendance created:', result);
+    res.status(201).json({ message: 'Attendance marked successfully', count: result.count });
   } catch (error) {
+    console.error('Attendance error:', error);
     res.status(500).json({ error: error.message });
   }
 });

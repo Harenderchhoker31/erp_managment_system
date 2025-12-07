@@ -169,7 +169,7 @@ const MarkAttendance = () => {
                                         <th className="border border-gray-300 px-4 py-3 text-left text-sm font-semibold">Student Name</th>
                                         <th className="border border-gray-300 px-4 py-3 text-center text-sm font-semibold">Present</th>
                                         <th className="border border-gray-300 px-4 py-3 text-center text-sm font-semibold">Absent</th>
-                                        <th className="border border-gray-300 px-4 py-3 text-center text-sm font-semibold">Late</th>
+                                        <th className="border border-gray-300 px-4 py-3 text-center text-sm font-semibold">Leave</th>
                                     </tr>
                                 </thead>
                                 <tbody>
@@ -199,9 +199,9 @@ const MarkAttendance = () => {
                                                 <input
                                                     type="radio"
                                                     name={`attendance-${student.id}`}
-                                                    checked={attendance[student.id] === 'LATE'}
-                                                    onChange={() => handleAttendanceChange(student.id, 'LATE')}
-                                                    className="h-4 w-4 text-yellow-600"
+                                                    checked={attendance[student.id] === 'LEAVE'}
+                                                    onChange={() => handleAttendanceChange(student.id, 'LEAVE')}
+                                                    className="h-4 w-4 text-blue-600"
                                                 />
                                             </td>
                                         </tr>

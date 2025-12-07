@@ -294,16 +294,37 @@ router.get('/stats', authenticateToken, authorizeRole(['ADMIN']), async (req, re
   try {
     const totalStudents = await connectWithRetry(() => prisma.student.count());
     const totalTeachers = await connectWithRetry(() => prisma.teacher.count());
-    const totalClasses = 0; // Simplified for now
+    const totalClasses = 0;
+
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+    const tomorrow = new Date(today);
+    tomorrow.setDate(tomorrow.getDate() + 1);
+
+    const todayAttendance = await connectWithRetry(() => 
+      prisma.attendance.findMany({
+        where: {
+          date: {
+            gte: today,
+            lt: tomorrow
+          }
+        }
+      })
+    );
+
+    const present = todayAttendance.filter(a => a.status === 'PRESENT').length;
+    const absent = todayAttendance.filter(a => a.status === 'ABSENT').length;
+    const leave = todayAttendance.filter(a => a.status === 'LEAVE').length;
 
     res.json({
       totalStudents,
       totalTeachers,
       totalClasses,
       attendance: {
-        present: 0,
-        absent: 0,
-        total: 0
+        present,
+        absent,
+        leave,
+        total: present + absent + leave
       }
     });
   } catch (error) {
@@ -345,8 +366,26 @@ router.get('/all-classes', authenticateToken, authorizeRole(['ADMIN']), async (r
     // Fetch all students to calculate counts
     const students = await prisma.student.findMany({
       select: {
+        id: true,
         class: true,
         section: true
+      }
+    });
+
+    // Get today's attendance
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+    const tomorrow = new Date(today);
+    tomorrow.setDate(tomorrow.getDate() + 1);
+
+    const attendance = await prisma.attendance.findMany({
+      where: {
+        date: { gte: today, lt: tomorrow }
+      },
+      include: {
+        student: {
+          select: { class: true, section: true }
+        }
       }
     });
 
@@ -362,10 +401,18 @@ router.get('/all-classes', authenticateToken, authorizeRole(['ADMIN']), async (r
       }
     });
 
-    // Calculate counts
+    // Calculate student counts
     const studentCounts = students.reduce((acc, student) => {
       const key = `${student.class}-${student.section}`;
       acc[key] = (acc[key] || 0) + 1;
+      return acc;
+    }, {});
+
+    // Calculate attendance counts by class
+    const attendanceCounts = attendance.reduce((acc, att) => {
+      const key = `${att.student.class}-${att.student.section}`;
+      if (!acc[key]) acc[key] = { present: 0, absent: 0, leave: 0 };
+      acc[key][att.status.toLowerCase()]++;
       return acc;
     }, {});
 
@@ -376,12 +423,16 @@ router.get('/all-classes', authenticateToken, authorizeRole(['ADMIN']), async (r
       return acc;
     }, {});
 
-    // Add count and class teacher to each class object
-    const classesWithData = classes.map(cls => ({
-      ...cls,
-      studentCount: studentCounts[`${cls.name}-${cls.section}`] || 0,
-      classTeacher: cls.teacher || classTeacherMap[`${cls.name}-${cls.section}`] || null
-    }));
+    // Add count, attendance, and class teacher to each class object
+    const classesWithData = classes.map(cls => {
+      const key = `${cls.name}-${cls.section}`;
+      return {
+        ...cls,
+        studentCount: studentCounts[key] || 0,
+        attendance: attendanceCounts[key] || { present: 0, absent: 0, leave: 0 },
+        classTeacher: cls.teacher || classTeacherMap[key] || null
+      };
+    });
 
     res.json(classesWithData);
   } catch (error) {
@@ -389,10 +440,11 @@ router.get('/all-classes', authenticateToken, authorizeRole(['ADMIN']), async (r
   }
 });
 
-// Get students by class and section
+// Get students by class and section with attendance and fee data
 router.get('/students/class/:className/:section', authenticateToken, authorizeRole(['ADMIN']), async (req, res) => {
   try {
     const { className, section } = req.params;
+    const { month, year } = req.query;
     const students = await prisma.student.findMany({
       where: {
         class: className,
@@ -402,7 +454,74 @@ router.get('/students/class/:className/:section', authenticateToken, authorizeRo
         name: 'asc'
       }
     });
-    res.json(students);
+
+    // Get today's attendance
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+    const tomorrow = new Date(today);
+    tomorrow.setDate(tomorrow.getDate() + 1);
+
+    const attendance = await prisma.attendance.findMany({
+      where: {
+        studentId: { in: students.map(s => s.id) },
+        date: { gte: today, lt: tomorrow }
+      }
+    });
+
+    // Get fee status for specified or current month
+    const currentMonth = month ? parseInt(month) : new Date().getMonth() + 1;
+    const currentYear = year ? parseInt(year) : new Date().getFullYear();
+    
+    // Create fee records for current month if they don't exist
+    for (const student of students) {
+      const existingFee = await prisma.fee.findFirst({
+        where: {
+          studentId: student.id,
+          month: currentMonth,
+          year: currentYear
+        }
+      });
+      
+      if (!existingFee) {
+        await prisma.fee.create({
+          data: {
+            studentId: student.id,
+            amount: 5000, // Default fee amount
+            dueDate: new Date(currentYear, currentMonth - 1, 10), // 10th of current month
+            description: 'Monthly Fee',
+            month: currentMonth,
+            year: currentYear,
+            status: 'PENDING'
+          }
+        });
+      }
+    }
+    
+    const fees = await prisma.fee.findMany({
+      where: {
+        studentId: { in: students.map(s => s.id) },
+        month: currentMonth,
+        year: currentYear
+      }
+    });
+
+    const attendanceMap = attendance.reduce((acc, att) => {
+      acc[att.studentId] = att.status;
+      return acc;
+    }, {});
+
+    const feeMap = fees.reduce((acc, fee) => {
+      acc[fee.studentId] = fee.status;
+      return acc;
+    }, {});
+
+    const studentsWithData = students.map(student => ({
+      ...student,
+      todayAttendance: attendanceMap[student.id] || null,
+      feeStatus: feeMap[student.id] || 'PENDING'
+    }));
+
+    res.json(studentsWithData);
   } catch (error) {
     res.status(500).json({ error: error.message });
   }
@@ -604,6 +723,98 @@ router.delete('/salary/:id', authenticateToken, authorizeRole(['ADMIN']), async 
       where: { id }
     });
     res.json({ message: 'Salary record deleted successfully' });
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+});
+
+// Debug fee data
+router.get('/debug-fees', authenticateToken, authorizeRole(['ADMIN']), async (req, res) => {
+  try {
+    const currentMonth = new Date().getMonth() + 1;
+    const currentYear = new Date().getFullYear();
+    
+    const allFees = await prisma.fee.findMany({
+      include: {
+        student: {
+          select: { name: true, rollNo: true }
+        }
+      }
+    });
+    
+    const currentMonthFees = await prisma.fee.findMany({
+      where: {
+        month: currentMonth,
+        year: currentYear
+      },
+      include: {
+        student: {
+          select: { name: true, rollNo: true }
+        }
+      }
+    });
+    
+    res.json({
+      currentMonth,
+      currentYear,
+      totalFees: allFees.length,
+      currentMonthFees: currentMonthFees.length,
+      allFees: allFees.slice(0, 5),
+      currentMonthFees
+    });
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+});
+
+// Get attendance by date
+router.get('/attendance/:date', authenticateToken, authorizeRole(['ADMIN']), async (req, res) => {
+  try {
+    const { date } = req.params;
+    const selectedDate = new Date(date);
+    selectedDate.setHours(0, 0, 0, 0);
+    const nextDay = new Date(selectedDate);
+    nextDay.setDate(nextDay.getDate() + 1);
+
+    const students = await prisma.student.findMany({
+      select: {
+        id: true,
+        name: true,
+        rollNo: true,
+        class: true,
+        section: true
+      },
+      orderBy: { rollNo: 'asc' }
+    });
+
+    const attendance = await prisma.attendance.findMany({
+      where: {
+        date: {
+          gte: selectedDate,
+          lt: nextDay
+        }
+      },
+      include: {
+        student: {
+          select: {
+            name: true,
+            rollNo: true
+          }
+        }
+      }
+    });
+
+    const attendanceMap = attendance.reduce((acc, att) => {
+      acc[att.studentId] = att.status;
+      return acc;
+    }, {});
+
+    const studentsWithAttendance = students.map(student => ({
+      ...student,
+      attendance: attendanceMap[student.id] || null
+    }));
+
+    res.json(studentsWithAttendance);
   } catch (error) {
     res.status(500).json({ error: error.message });
   }

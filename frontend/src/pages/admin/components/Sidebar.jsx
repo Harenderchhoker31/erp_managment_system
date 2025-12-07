@@ -9,6 +9,7 @@ const Sidebar = ({ activeDialog, setActiveDialog }) => {
     { id: 'teachers', label: 'Manage Teachers'},
     { id: 'view-classes', label: 'Manage Classes' },
     { id: 'assign', label: 'Assign Class'},
+    { id: 'attendance', label: 'View Attendance' },
     { id: 'events-notices', label: 'Events & Notice' },
     { id: 'salary', label: 'Salary Management' },
     { id: 'fees', label: 'Fees Management' },

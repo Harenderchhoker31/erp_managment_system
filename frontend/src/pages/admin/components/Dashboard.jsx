@@ -134,35 +134,23 @@ const Dashboard = () => {
 
         <div className="bg-white p-6 rounded-lg shadow-sm border">
           <div className="ml-4">
-            <p className="text-sm font-medium text-gray-600 mb-2">Fee Status</p>
-            <select
-              value={`${selectedYear}-${String(selectedMonth).padStart(2, '0')}`}
-              onChange={(e) => {
-                const [year, month] = e.target.value.split('-');
-                setSelectedYear(parseInt(year));
-                setSelectedMonth(parseInt(month));
-              }}
-              className="w-full px-2 py-1 border rounded text-xs mb-3"
-            >
-              {Array.from({ length: 12 }, (_, i) => {
-                const month = i + 1;
-                const year = selectedYear;
-                const monthNames = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
-                return (
-                  <option key={`${year}-${month}`} value={`${year}-${String(month).padStart(2, '0')}`}>
-                    {monthNames[month - 1]} {year}
-                  </option>
-                );
-              })}
-            </select>
+            <p className="text-sm font-medium text-gray-600 mb-2">Today's Attendance</p>
             <div className="space-y-1">
               <div className="flex justify-between">
-                <span className="text-sm text-green-600">Paid:</span>
-                <span className="text-sm font-semibold text-green-600">{feeStats.paid}</span>
+                <span className="text-sm text-green-600">Present:</span>
+                <span className="text-sm font-semibold text-green-600">{stats.attendance?.present || 0}</span>
               </div>
               <div className="flex justify-between">
-                <span className="text-sm text-red-600">Unpaid:</span>
-                <span className="text-sm font-semibold text-red-600">{feeStats.unpaid}</span>
+                <span className="text-sm text-red-600">Absent:</span>
+                <span className="text-sm font-semibold text-red-600">{stats.attendance?.absent || 0}</span>
+              </div>
+              <div className="flex justify-between">
+                <span className="text-sm text-blue-600">Leave:</span>
+                <span className="text-sm font-semibold text-blue-600">{stats.attendance?.leave || 0}</span>
+              </div>
+              <div className="flex justify-between border-t pt-1">
+                <span className="text-sm text-gray-600">Total:</span>
+                <span className="text-sm font-semibold text-gray-600">{stats.attendance?.total || 0}</span>
               </div>
             </div>
           </div>
