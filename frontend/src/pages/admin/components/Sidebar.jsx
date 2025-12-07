@@ -10,6 +10,7 @@ const Sidebar = ({ activeDialog, setActiveDialog }) => {
     { id: 'view-classes', label: 'Manage Classes' },
     { id: 'assign', label: 'Assign Class'},
     { id: 'track-progress', label: 'Track Progress' },
+    { id: 'marks', label: 'Manage Marks' },
     { id: 'events-notices', label: 'Events & Notice' },
     { id: 'salary', label: 'Salary Management' },
     { id: 'fees', label: 'Fees Management' },

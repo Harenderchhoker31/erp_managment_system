@@ -1,11 +1,27 @@
+import { useState, useEffect } from 'react';
 import { useAuth } from '../../../context/AuthContext';
+import { teacherAPI } from '../../../utils/api';
 
 const TeacherSidebar = ({ activeSection, setActiveSection }) => {
   const { logout, user } = useAuth();
+  const [isClassTeacher, setIsClassTeacher] = useState(false);
 
-  const menuItems = [
+  useEffect(() => {
+    checkClassTeacherStatus();
+  }, []);
+
+  const checkClassTeacherStatus = async () => {
+    try {
+      const response = await teacherAPI.getClasses();
+      const hasClassTeacherRole = response.data.some(cls => cls.isClassTeacher);
+      setIsClassTeacher(hasClassTeacherRole);
+    } catch (error) {
+      console.error('Error checking class teacher status:', error);
+    }
+  };
+
+  const baseMenuItems = [
     { id: 'dashboard', label: 'Dashboard' },
-    { id: 'attendance', label: 'Mark Attendance' },
     { id: 'marks', label: 'Upload Marks' },
     { id: 'assignments', label: 'Assignments' },
     { id: 'classes', label: 'My Classes' },
@@ -14,6 +30,10 @@ const TeacherSidebar = ({ activeSection, setActiveSection }) => {
     { id: 'notices', label: 'View Notices' },
     { id: 'feedback', label: 'Parent Feedback' },
   ];
+
+  const menuItems = isClassTeacher 
+    ? [baseMenuItems[0], { id: 'attendance', label: 'Mark Attendance' }, ...baseMenuItems.slice(1)]
+    : baseMenuItems;
 
   return (
     <div className="w-64 bg-white border-r h-screen flex flex-col fixed left-0 top-0 z-10">

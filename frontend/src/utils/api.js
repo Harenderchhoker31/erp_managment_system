@@ -53,6 +53,7 @@ export const adminAPI = {
   getAllClasses: () => api.get('/api/admin/all-classes'),
   getStudentsByClass: (className, section) => api.get(`/api/admin/students/class/${encodeURIComponent(className)}/${encodeURIComponent(section)}`),
   getStats: () => api.get('/api/admin/stats'),
+  getMarks: () => api.get('/api/admin/marks'),
 };
 
 // Student API

@@ -10,6 +10,7 @@ import TrackProgress from './components/TrackProgress';
 import ManageEventsNotices from './components/ManageEventsNotices';
 import SalaryManagement from './components/SalaryManagement';
 import FeeManagement from './components/FeeManagement';
+import ManageMarks from './components/ManageMarks';
 
 const AdminPanel = () => {
   const [activeDialog, setActiveDialog] = useState('dashboard');
@@ -42,6 +43,8 @@ const AdminPanel = () => {
         return <SalaryManagement onSuccess={handleSuccess} />;
       case 'fees':
         return <FeeManagement onSuccess={handleSuccess} />;
+      case 'marks':
+        return <ManageMarks />;
       default:
         return <Dashboard />;
     }

@@ -198,7 +198,7 @@ const CreateAssignment = () => {
                                             <p className="text-sm text-gray-600 mt-1">{assignment.description}</p>
                                             <div className="flex items-center gap-4 mt-2 text-sm text-gray-600">
                                                 <span>📚 {assignment.subject}</span>
-                                                <span>🏫 Class {assignment.className} - {assignment.section}</span>
+                                                <span>🏫 Class {assignment.class} - {assignment.section}</span>
                                                 <span>📅 Due: {new Date(assignment.dueDate).toLocaleDateString()}</span>
                                             </div>
                                         </div>

@@ -116,13 +116,12 @@ router.post('/marks', authenticateToken, authorizeRole(['TEACHER']), async (req,
       studentId: record.studentId,
       subject: record.subject,
       examType: record.examType,
-      marks: parseFloat(record.marks),
-      maxMarks: parseFloat(record.maxMarks),
-      date: new Date(record.date),
-      uploadedBy: req.user.id
+      marks: parseInt(record.marks),
+      maxMarks: parseInt(record.maxMarks),
+      date: new Date(record.date)
     }));
 
-    await prisma.marks.createMany({
+    await prisma.mark.createMany({
       data: marksData
     });
 
@@ -142,7 +141,7 @@ router.post('/assignments', authenticateToken, authorizeRole(['TEACHER']), async
         title,
         description,
         dueDate: new Date(dueDate),
-        className,
+        class: className,
         section,
         subject,
         createdBy: req.user.id

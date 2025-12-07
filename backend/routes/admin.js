@@ -881,7 +881,7 @@ router.get('/marks', authenticateToken, authorizeRole(['ADMIN']), async (req, re
     const marks = await prisma.mark.findMany({
       include: {
         student: {
-          select: { name: true, rollNo: true }
+          select: { name: true, rollNo: true, class: true, section: true }
         }
       },
       orderBy: { createdAt: 'desc' }

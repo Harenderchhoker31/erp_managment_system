@@ -163,14 +163,25 @@ const UploadMarks = () => {
 
                         <div>
                             <label className="block text-sm font-medium text-gray-700 mb-2">Subject</label>
-                            <input
-                                type="text"
+                            <select
                                 value={subject}
                                 onChange={(e) => setSubject(e.target.value)}
                                 className="w-full px-4 py-2 border border-gray-300 rounded focus:outline-none focus:border-blue-500"
-                                placeholder="e.g., Mathematics"
                                 required
-                            />
+                            >
+                                <option value="">Select subject...</option>
+                                <option value="Mathematics">Mathematics</option>
+                                <option value="Science">Science</option>
+                                <option value="English">English</option>
+                                <option value="Hindi">Hindi</option>
+                                <option value="Social Studies">Social Studies</option>
+                                <option value="Computer Science">Computer Science</option>
+                                <option value="Physics">Physics</option>
+                                <option value="Chemistry">Chemistry</option>
+                                <option value="Biology">Biology</option>
+                                <option value="History">History</option>
+                                <option value="Geography">Geography</option>
+                            </select>
                         </div>
 
                         <div>
@@ -182,10 +193,12 @@ const UploadMarks = () => {
                                 required
                             >
                                 <option value="">Choose exam type...</option>
-                                <option value="Unit Test">Unit Test</option>
-                                <option value="Mid Term">Mid Term</option>
+                                <option value="Unit Test 1">Unit Test 1</option>
+                                <option value="Unit Test 2">Unit Test 2</option>
+                                <option value="Unit Test 3">Unit Test 3</option>
+                                <option value="Unit Test 4">Unit Test 4</option>
+                                <option value="Half Yearly">Half Yearly</option>
                                 <option value="Final Exam">Final Exam</option>
-                                <option value="Quiz">Quiz</option>
                                 <option value="Assignment">Assignment</option>
                             </select>
                         </div>

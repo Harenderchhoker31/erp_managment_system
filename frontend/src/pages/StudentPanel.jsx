@@ -35,15 +35,14 @@ const StudentPanel = () => {
     <div className="min-h-screen bg-gray-50 flex">
       <StudentSidebar activeSection={activeSection} setActiveSection={setActiveSection} />
 
-      <div className="flex-1 flex flex-col">
+      {/* Main Content */}
+      <div className="flex-1 flex flex-col ml-64">
         <header className="bg-white shadow-sm border-b p-6">
-          <h2 className="text-2xl font-bold text-gray-900">
-            {activeSection.charAt(0).toUpperCase() + activeSection.slice(1)}
-          </h2>
-          <p className="text-gray-600 mt-1">Welcome, {user?.name}</p>
+          <h2 className="text-2xl font-bold text-gray-900">Student Dashboard</h2>
+          <p className="text-gray-600 mt-1">View your academic progress and school information</p>
         </header>
 
-        <main className="p-6 flex-1">
+        <main className="p-6 h-full">
           {renderContent()}
         </main>
       </div>
