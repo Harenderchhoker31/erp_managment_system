@@ -210,14 +210,32 @@ router.get('/feedback', authenticateToken, authorizeRole(['TEACHER']), async (re
   try {
     const feedback = await prisma.feedback.findMany({
       where: { teacherId: req.user.id },
-      include: {
-        parent: {
-          select: { name: true, email: true }
-        }
-      },
       orderBy: { createdAt: 'desc' }
     });
-    res.json(feedback);
+    
+    // Get sender info for each feedback
+    const feedbackWithSender = await Promise.all(feedback.map(async (fb) => {
+      // Try to find in User table first
+      let sender = await prisma.user.findUnique({
+        where: { id: fb.parentId },
+        select: { name: true, email: true }
+      });
+      
+      // If not found, try Student table
+      if (!sender) {
+        const student = await prisma.student.findUnique({
+          where: { id: fb.parentId },
+          select: { name: true, email: true }
+        });
+        if (student) {
+          sender = { name: student.name, email: student.email };
+        }
+      }
+      
+      return { ...fb, sender };
+    }));
+    
+    res.json(feedbackWithSender);
   } catch (error) {
     res.status(500).json({ error: error.message });
   }

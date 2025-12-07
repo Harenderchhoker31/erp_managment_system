@@ -21,7 +21,6 @@ model User {
   events    Event[]
   assignments Assignment[]
   notifications Notification[]
-  feedbacks Feedback[]
   notices   Notice[]
 }
 
@@ -250,8 +249,7 @@ model Feedback {
   teacherId String?  @db.ObjectId
   createdAt DateTime @default(now())
 
-  // Relations
-  parent User @relation(fields: [parentId], references: [id])
+  // Relations - parentId can reference either User or Student
   teacher Teacher? @relation(fields: [teacherId], references: [id])
 }
 

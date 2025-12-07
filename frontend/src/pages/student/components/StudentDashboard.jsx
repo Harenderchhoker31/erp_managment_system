@@ -79,7 +79,7 @@ const StudentDashboard = () => {
                 <div className="bg-white p-6 rounded-lg shadow-sm border">
                     <div className="flex items-center">
                         <div className="p-2 bg-green-100 rounded-lg">
-                            <span className="text-green-600 text-xl">📊</span>
+                            <span className="text-green-600 text-xl">%</span>
                         </div>
                         <div className="ml-4">
                             <p className="text-sm font-medium text-gray-600">Attendance</p>
@@ -91,7 +91,7 @@ const StudentDashboard = () => {
                 <div className="bg-white p-6 rounded-lg shadow-sm border">
                     <div className="flex items-center">
                         <div className="p-2 bg-blue-100 rounded-lg">
-                            <span className="text-blue-600 text-xl">📝</span>
+                            <span className="text-blue-600 text-xl">#</span>
                         </div>
                         <div className="ml-4">
                             <p className="text-sm font-medium text-gray-600">Assignments</p>
@@ -103,7 +103,7 @@ const StudentDashboard = () => {
                 <div className="bg-white p-6 rounded-lg shadow-sm border">
                     <div className="flex items-center">
                         <div className="p-2 bg-purple-100 rounded-lg">
-                            <span className="text-purple-600 text-xl">🎉</span>
+                            <span className="text-purple-600 text-xl">!</span>
                         </div>
                         <div className="ml-4">
                             <p className="text-sm font-medium text-gray-600">Upcoming Events</p>
@@ -115,7 +115,7 @@ const StudentDashboard = () => {
                 <div className="bg-white p-6 rounded-lg shadow-sm border">
                     <div className="flex items-center">
                         <div className="p-2 bg-yellow-100 rounded-lg">
-                            <span className="text-yellow-600 text-xl">📢</span>
+                            <span className="text-yellow-600 text-xl">i</span>
                         </div>
                         <div className="ml-4">
                             <p className="text-sm font-medium text-gray-600">Notices</p>
@@ -128,7 +128,7 @@ const StudentDashboard = () => {
             {/* Recent Content */}
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
                 <div className="bg-white rounded-lg shadow-sm border p-6">
-                    <h3 className="text-lg font-semibold text-gray-900 mb-4">📊 Recent Marks</h3>
+                    <h3 className="text-lg font-semibold text-gray-900 mb-4">Recent Marks</h3>
                     {recentMarks.length > 0 ? (
                         <div className="space-y-3">
                             {recentMarks.map((mark) => (
@@ -150,7 +150,7 @@ const StudentDashboard = () => {
                 </div>
 
                 <div className="bg-white rounded-lg shadow-sm border p-6">
-                    <h3 className="text-lg font-semibold text-gray-900 mb-4">🎉 Upcoming Events</h3>
+                    <h3 className="text-lg font-semibold text-gray-900 mb-4">Upcoming Events</h3>
                     {upcomingEvents.length > 0 ? (
                         <div className="space-y-3">
                             {upcomingEvents.map((event) => (
