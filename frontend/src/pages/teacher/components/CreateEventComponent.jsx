@@ -1,26 +1,26 @@
 import { useState, useEffect } from 'react';
 import { teacherAPI } from '../../../utils/api';
 
-const CreateEvent = () => {
+const CreateEventComponent = () => {
     const [formData, setFormData] = useState({
         title: '',
-        message: '',
-        type: 'GENERAL'
+        description: '',
+        date: ''
     });
     const [events, setEvents] = useState([]);
     const [loading, setLoading] = useState(false);
     const [message, setMessage] = useState('');
 
     useEffect(() => {
-        fetchNotices();
+        fetchEvents();
     }, []);
 
-    const fetchNotices = async () => {
+    const fetchEvents = async () => {
         try {
-            const response = await teacherAPI.getNotices();
+            const response = await teacherAPI.getMyEvents();
             setEvents(response.data);
         } catch (error) {
-            console.error('Error fetching notices:', error);
+            console.error('Error fetching events:', error);
         }
     };
 
@@ -29,18 +29,18 @@ const CreateEvent = () => {
         setLoading(true);
 
         try {
-            await teacherAPI.createNotice(formData);
-            setMessage('Notice created successfully!');
+            await teacherAPI.createEvent(formData);
+            setMessage('Event created successfully!');
             setFormData({
                 title: '',
-                message: '',
-                type: 'GENERAL'
+                description: '',
+                date: ''
             });
-            fetchNotices();
+            fetchEvents();
             setTimeout(() => setMessage(''), 3000);
         } catch (error) {
             console.error('Error creating event:', error);
-            setMessage('Error creating notice. Please try again.');
+            setMessage('Error creating event. Please try again.');
         } finally {
             setLoading(false);
         }
@@ -50,8 +50,8 @@ const CreateEvent = () => {
         <div className="space-y-4">
             <div className="flex justify-between items-center p-4 bg-white border border-gray-300 rounded">
                 <div>
-                    <h3 className="text-xl font-bold text-gray-900">Create Notice</h3>
-                    <p className="text-gray-600 text-sm">Create notices for students and parents</p>
+                    <h3 className="text-xl font-bold text-gray-900">Create Event</h3>
+                    <p className="text-gray-600 text-sm">Create school events and activities</p>
                 </div>
             </div>
 
@@ -65,40 +65,37 @@ const CreateEvent = () => {
                 <form onSubmit={handleSubmit} className="space-y-4">
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                         <div>
-                            <label className="block text-sm font-medium text-gray-700 mb-2">Notice Title *</label>
+                            <label className="block text-sm font-medium text-gray-700 mb-2">Event Title *</label>
                             <input
                                 type="text"
                                 value={formData.title}
                                 onChange={(e) => setFormData({ ...formData, title: e.target.value })}
                                 className="w-full px-4 py-2 border border-gray-300 rounded focus:outline-none focus:border-blue-500"
-                                placeholder="Notice title"
+                                placeholder="Event title"
                                 required
                             />
                         </div>
 
                         <div>
-                            <label className="block text-sm font-medium text-gray-700 mb-2">Type</label>
-                            <select
-                                value={formData.type || 'GENERAL'}
-                                onChange={(e) => setFormData({ ...formData, type: e.target.value })}
+                            <label className="block text-sm font-medium text-gray-700 mb-2">Date & Time *</label>
+                            <input
+                                type="datetime-local"
+                                value={formData.date}
+                                onChange={(e) => setFormData({ ...formData, date: e.target.value })}
                                 className="w-full px-4 py-2 border border-gray-300 rounded focus:outline-none focus:border-blue-500"
-                            >
-                                <option value="GENERAL">General</option>
-                                <option value="URGENT">Urgent</option>
-                                <option value="ACADEMIC">Academic</option>
-                                <option value="EVENT">Event</option>
-                            </select>
+                                required
+                            />
                         </div>
                     </div>
 
                     <div>
                         <label className="block text-sm font-medium text-gray-700 mb-2">Description *</label>
                         <textarea
-                            value={formData.message}
-                            onChange={(e) => setFormData({ ...formData, message: e.target.value })}
+                            value={formData.description}
+                            onChange={(e) => setFormData({ ...formData, description: e.target.value })}
                             className="w-full px-4 py-2 border border-gray-300 rounded focus:outline-none focus:border-blue-500"
                             rows="4"
-                            placeholder="Notice message and details..."
+                            placeholder="Event description and details..."
                             required
                         />
                     </div>
@@ -108,14 +105,14 @@ const CreateEvent = () => {
                         disabled={loading}
                         className="px-6 py-2 bg-green-600 text-white rounded hover:bg-green-700 transition-colors disabled:bg-gray-400 font-medium"
                     >
-                        {loading ? 'Creating...' : 'Create Notice'}
+                        {loading ? 'Creating...' : 'Create Event'}
                     </button>
                 </form>
             </div>
 
             <div className="bg-white border border-gray-300 rounded overflow-hidden">
                 <div className="p-4 border-b">
-                    <h4 className="text-lg font-semibold text-gray-900">My Notices</h4>
+                    <h4 className="text-lg font-semibold text-gray-900">My Events</h4>
                 </div>
                 <div className="p-4">
                     {events.length > 0 ? (
@@ -123,15 +120,15 @@ const CreateEvent = () => {
                             {events.map((event) => (
                                 <div key={event.id} className="p-3 bg-blue-50 rounded-lg border-l-4 border-blue-500">
                                     <h4 className="font-medium text-gray-800">{event.title}</h4>
-                                    <p className="text-sm text-gray-600 mt-1">{event.message}</p>
+                                    <p className="text-sm text-gray-600 mt-1">{event.description}</p>
                                     <p className="text-xs text-blue-600 mt-2">
-                                        {event.type} • {new Date(event.createdAt).toLocaleDateString()} • Created by: {event.creator ? (event.creator.role === 'ADMIN' ? 'Principal' : event.creator.name) : 'Unknown'}
+                                        {new Date(event.date).toLocaleDateString()} at {new Date(event.date).toLocaleTimeString()} • Created by: {event.creator ? (event.creator.role === 'ADMIN' ? 'Principal' : event.creator.name) : 'You'}
                                     </p>
                                 </div>
                             ))}
                         </div>
                     ) : (
-                        <p className="text-gray-500 text-center py-4">No notices created yet</p>
+                        <p className="text-gray-500 text-center py-4">No events created yet</p>
                     )}
                 </div>
             </div>
@@ -139,4 +136,4 @@ const CreateEvent = () => {
     );
 };
 
-export default CreateEvent;
+export default CreateEventComponent;

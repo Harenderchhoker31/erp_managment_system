@@ -118,7 +118,7 @@ const TeacherDashboard = () => {
                                     <h4 className="font-medium text-gray-800">{event.title}</h4>
                                     <p className="text-sm text-gray-600 mt-1">{event.description}</p>
                                     <p className="text-xs text-blue-600 mt-2">
-                                        {new Date(event.date).toLocaleDateString()} at {new Date(event.date).toLocaleTimeString()}
+                                        {new Date(event.date).toLocaleDateString()} at {new Date(event.date).toLocaleTimeString()} • Created by: {event.creator ? (event.creator.role === 'ADMIN' ? 'Principal' : event.creator.name) : 'Administration'}
                                     </p>
                                 </div>
                             ))}
@@ -148,7 +148,7 @@ const TeacherDashboard = () => {
                                     </div>
                                     <p className="text-sm text-gray-600">{notice.message}</p>
                                     <p className="text-xs text-gray-500 mt-2">
-                                        {new Date(notice.createdAt).toLocaleDateString()}
+                                        {new Date(notice.createdAt).toLocaleDateString()} • By: {notice.creator ? (notice.creator.role === 'ADMIN' ? 'Principal' : notice.creator.name) : 'Administration'}
                                     </p>
                                 </div>
                             ))}

@@ -77,7 +77,10 @@ export const teacherAPI = {
   createAssignment: (assignmentData) => api.post('/api/teacher/assignments', assignmentData),
   getAssignments: () => api.get('/api/teacher/assignments'),
   createEvent: (eventData) => api.post('/api/teacher/events', eventData),
-  getEvents: () => api.get('/api/teacher/events'),
+  getMyEvents: () => api.get('/api/teacher/events'),
+  getEvents: () => api.get('/api/admin/events'),
+  createNotice: (noticeData) => api.post('/api/teacher/notices', noticeData),
+  getNotices: () => api.get('/api/teacher/notices'),
   getFeedback: () => api.get('/api/teacher/feedback'),
 };
 

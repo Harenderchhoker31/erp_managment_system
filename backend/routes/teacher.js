@@ -176,11 +176,30 @@ router.post('/events', authenticateToken, authorizeRole(['TEACHER']), async (req
       data: {
         title,
         description,
-        date: new Date(date)
+        date: new Date(date),
+        createdBy: req.user.id
       }
     });
 
     res.status(201).json({ message: 'Event created successfully', event });
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+});
+
+// Get teacher's events
+router.get('/events', authenticateToken, authorizeRole(['TEACHER']), async (req, res) => {
+  try {
+    const events = await prisma.event.findMany({
+      where: { createdBy: req.user.id },
+      include: {
+        creator: {
+          select: { name: true, role: true }
+        }
+      },
+      orderBy: { createdAt: 'desc' }
+    });
+    res.json(events);
   } catch (error) {
     res.status(500).json({ error: error.message });
   }
@@ -193,6 +212,70 @@ router.get('/feedback', authenticateToken, authorizeRole(['TEACHER']), async (re
       orderBy: { createdAt: 'desc' }
     });
     res.json(feedback);
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+});
+
+// Create notice
+router.post('/notices', authenticateToken, authorizeRole(['TEACHER']), async (req, res) => {
+  try {
+    const { title, message, type } = req.body;
+    
+    // Get teacher info
+    const teacher = await prisma.teacher.findUnique({
+      where: { id: req.user.id },
+      select: { name: true }
+    });
+    
+    const notice = await prisma.notice.create({
+      data: {
+        title,
+        message,
+        type: type || 'GENERAL',
+        createdBy: req.user.id
+      }
+    });
+
+    res.status(201).json({ message: 'Notice created successfully', notice });
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+});
+
+// Get notices
+router.get('/notices', authenticateToken, authorizeRole(['TEACHER']), async (req, res) => {
+  try {
+    const notices = await prisma.notice.findMany({
+      orderBy: { createdAt: 'desc' }
+    });
+    
+    // Get creator info for each notice
+    const noticesWithCreator = await Promise.all(notices.map(async (notice) => {
+      if (notice.createdBy) {
+        // Try to find in User table first (admin)
+        let creator = await prisma.user.findUnique({
+          where: { id: notice.createdBy },
+          select: { name: true, role: true }
+        });
+        
+        // If not found, try Teacher table
+        if (!creator) {
+          const teacher = await prisma.teacher.findUnique({
+            where: { id: notice.createdBy },
+            select: { name: true }
+          });
+          if (teacher) {
+            creator = { name: teacher.name, role: 'TEACHER' };
+          }
+        }
+        
+        return { ...notice, creator };
+      }
+      return notice;
+    }));
+    
+    res.json(noticesWithCreator);
   } catch (error) {
     res.status(500).json({ error: error.message });
   }

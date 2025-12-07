@@ -592,6 +592,11 @@ router.post('/events', authenticateToken, authorizeRole(['ADMIN']), async (req, 
 router.get('/events', authenticateToken, authorizeRole(['ADMIN', 'TEACHER']), async (req, res) => {
   try {
     const events = await prisma.event.findMany({
+      include: {
+        creator: {
+          select: { name: true, role: true }
+        }
+      },
       orderBy: { date: 'asc' }
     });
     res.json(events);
@@ -620,7 +625,8 @@ router.post('/notices', authenticateToken, authorizeRole(['ADMIN']), async (req,
       data: {
         title,
         message,
-        type: type || 'GENERAL'
+        type: type || 'GENERAL',
+        createdBy: req.user.id
       }
     });
     res.status(201).json({ message: 'Notice created successfully', notice });
@@ -632,6 +638,11 @@ router.post('/notices', authenticateToken, authorizeRole(['ADMIN']), async (req,
 router.get('/notices', authenticateToken, authorizeRole(['ADMIN', 'TEACHER']), async (req, res) => {
   try {
     const notices = await prisma.notice.findMany({
+      include: {
+        creator: {
+          select: { name: true, role: true }
+        }
+      },
       orderBy: { createdAt: 'desc' }
     });
     res.json(notices);

@@ -26,14 +26,12 @@ const TeacherSidebar = ({ activeSection, setActiveSection }) => {
     { id: 'assignments', label: 'Assignments' },
     { id: 'classes', label: 'My Classes' },
     { id: 'students', label: 'View Students' },
-    { id: 'events', label: 'Create Events' },
-    { id: 'notices', label: 'View Notices' },
-    { id: 'feedback', label: 'Parent Feedback' },
+    { id: 'create-events', label: 'Create Events' },
   ];
 
   const menuItems = isClassTeacher 
-    ? [baseMenuItems[0], { id: 'attendance', label: 'Mark Attendance' }, ...baseMenuItems.slice(1)]
-    : baseMenuItems;
+    ? [baseMenuItems[0], { id: 'attendance', label: 'Mark Attendance' }, ...baseMenuItems.slice(1), { id: 'notices', label: 'Create Notice' }, { id: 'feedback', label: 'Parent Feedback' }]
+    : [...baseMenuItems, { id: 'notices', label: 'Create Notice' }, { id: 'feedback', label: 'Parent Feedback' }];
 
   return (
     <div className="w-64 bg-white border-r h-screen flex flex-col fixed left-0 top-0 z-10">

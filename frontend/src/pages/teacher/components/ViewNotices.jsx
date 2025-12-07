@@ -72,7 +72,7 @@ const ViewNotices = () => {
                                 <p className="text-gray-700 mb-3">{notice.message}</p>
                                 <div className="flex justify-between items-center text-sm text-gray-500">
                                     <span>Posted: {new Date(notice.createdAt).toLocaleDateString()}</span>
-                                    <span>By: Administration</span>
+                                    <span>By: {notice.creator ? (notice.creator.role === 'ADMIN' ? 'Principal' : notice.creator.name) : 'Administration'}</span>
                                 </div>
                             </div>
                         ))}
