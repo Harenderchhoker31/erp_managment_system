@@ -197,3 +197,10 @@ npm run dev
 ## 📄 License
 
 This project is licensed under the MIT License.
+
+ADMIN_ID - admin@edumate.com
+ADMIN_PASS - admin@123
+TEACHER_ID - harry@teacher.edu
+TEACHER_PASS - 12345
+STUDENT_ID - akash@student.edu
+STUDENT_PASS - 12345
