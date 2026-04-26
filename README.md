@@ -1,14 +1,7 @@
-🔐 Sample Credentials (For Testing)
+🔐 Login Credentials Summary
+Admin: admin@edumate.com / admin
 
-You can use the following demo accounts to explore different roles in the system:
+Teacher: testteacher@teacher.edu / test
 
-👨‍💼 Admin
-Email: admin@edumate.com
-Password: admin
-🎓 Student
-Email: kabir.bansal946@student.edu
-Password: kabir
-👨‍🏫 Teacher
-Email: ajay.jain@teacher.edu
-Password: ajay
+Student: test@student.edu / test
 
