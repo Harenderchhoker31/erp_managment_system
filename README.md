@@ -6,10 +6,10 @@ A full-stack School Management System with role-based dashboards for Admins, Tea
 📁 Repository: github.com/Harenderchhoker31/erp_managment_system
 
 🔐 Demo Login Credentials
-Role      Email                    Password
-Admin     admin@edumate.com        admin    
-Teacher   testteacher@teacher.edu  test
-Student   test@student.edu         test
+
+Admin - admin@edumate.com  / admin  
+Teacher - testteacher@teacher.edu / test
+Student - test@student.edu / test
 
 ✨ Features
 👨‍💼 Admin Panel
